@@ -1,0 +1,10 @@
+{:http {:host "127.0.0.1"
+        :port 8787}
+ :admin {:token #secret "OIOzkfiZzrzrIIejj"}
+ :store {:access-key #secret "foo"
+         :secret-key #secret "bar"
+         :endpoint "foo.com"}
+ :logging {:level "debug"
+           :console true
+           :overrides {:org.eclipse.jetty "info"
+                       :org.apache.http "error"}}}
