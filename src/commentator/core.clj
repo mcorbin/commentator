@@ -6,6 +6,7 @@
             [commentator.handler :as handler]
             [commentator.http :as http]
             [commentator.log :as log]
+            [commentator.rate-limit :as rate-limit]
             [commentator.store :as store]
             [signal.handler :refer [with-handler]]
             [unilog.config :refer [start-logging!]])
@@ -22,12 +23,13 @@
              (component/using [:handler]))
    :s3 (store/map->S3 {:credentials (dissoc store :bucket)
                        :bucket (:bucket store)})
+   :rate-limiter (rate-limit/map->SimpleRateLimiter {})
    :event-manager (-> (event/map->EventManager {})
                       (component/using [:s3]))
    :comment-manager (-> (comment/map->CommentManager (update comment :allowed-articles set))
                         (component/using [:s3]))
    :handler (-> (handler/map->Handler {:challenges challenges})
-                (component/using [:event-manager :comment-manager]))))
+                (component/using [:event-manager :comment-manager :rate-limiter]))))
 
 (defn init-system
   "Initialize system, dropping the previous state."

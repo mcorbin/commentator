@@ -5,6 +5,7 @@
             [commentator.challenge :as challenge]
             [commentator.comment :as cc]
             [commentator.log :as log]
+            [commentator.rate-limit :as rate-limit]
             [commentator.spec :as spec]
             [exoscale.coax :as coax]
             [exoscale.ex :as ex])
@@ -33,7 +34,7 @@
     (ex/assert-spec-valid ::cc/id comment-id)
     comment-id))
 
-(defrecord Handler [comment-manager event-manager challenges]
+(defrecord Handler [comment-manager event-manager rate-limiter challenges]
   IHandler
   (new-comment [this request]
     (let [article (req->article request)
@@ -43,13 +44,15 @@
                    (-> (merge (select-keys body [:content :author])
                               {:id (UUID/randomUUID)
                                :approved false
-                               :timestamp (System/currentTimeMillis)})))
+                               :timestamp (System/currentTimeMillis)})
+                       cc/sanitize))
           challenge (coax/coerce ::spec/keyword (:challenge body))
           answer (:answer body)]
       (ex/assert-spec-valid ::cc/comment comment)
       (ex/assert-spec-valid ::spec/keyword challenge)
       (ex/assert-spec-valid ::spec/non-empty-string answer)
       (challenge/verify challenges challenge answer)
+      (rate-limit/validate rate-limiter request)
       (cc/add-comment comment-manager article comment)
       (future (try (ce/add-event event-manager (ce/new-comment article
                                                                (:id comment)))

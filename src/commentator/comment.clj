@@ -1,5 +1,6 @@
 (ns commentator.comment
   (:require [clojure.spec.alpha :as s]
+            [clojure.string :as string]
             [cheshire.core :as json]
             [commentator.log :as log]
             [commentator.spec :as spec]
@@ -30,6 +31,20 @@
   (add-comment [this article comment] "Add a comment for an article")
   (delete-comment [this article comment-id] "Delete a comment for an article")
   (get-comment [this article comment-id] "Get a comment by ID for an article"))
+
+(defn escape-html
+  "Change special characters into HTML character entities."
+  [text]
+  (.. ^String text
+    (string/replace "&" "&amp;")
+    (string/replace "<" "&lt;")
+    (string/replace ">" "&gt;")
+    (string/replace "\"" "&quot;")))
+
+(defn sanitize
+  [comment]
+  (-> (update comment :author escape-html)
+      (update :content escape-html)))
 
 (defn article-file-name
   [article]

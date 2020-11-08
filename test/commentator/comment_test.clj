@@ -7,6 +7,16 @@
             [spy.protocol :as protocol])
   (:import java.util.UUID))
 
+(deftest escape-html-test
+  (is (= "foo &amp; &lt;script&gt; &quot;"
+         (comment/escape-html "foo & <script> \""))))
+
+(deftest sanitize-test
+  (is (= {:content "foo &amp; &lt;script&gt; &quot;"
+          :author "&amp; &lt; aa"}
+         (comment/sanitize {:content "foo & <script> \""
+                            :author "& < aa"}))))
+
 (deftest article-file-name-test
   (is (= "foo.json" (comment/article-file-name "foo"))))
 
