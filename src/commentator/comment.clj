@@ -129,6 +129,7 @@
     (if (article-exists? this article)
       (let [comments (->> (for-article this article true)
                           (remove #(= (:id %) comment-id)))]
+        ;; TODO: throw if not found
         (store/save-resource s3
                              (article-file-name article)
                              (json/generate-string comments))

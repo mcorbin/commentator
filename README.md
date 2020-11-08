@@ -18,6 +18,11 @@ curl http://localhost:8787/api/v1/comment/foo
 curl -H "Authorization: OIOzkfiZzrzrIIejj" \
 http://localhost:8787/api/admin/event
 
+### Delete an event
+
+curl -X DELETE -H "Authorization: OIOzkfiZzrzrIIejj" \
+http://localhost:8787/api/admin/event/6752bc40-9c8b-4fc4-a1c1-d1e4cdfe9970
+
 ### List all comments for an article
 
 curl -H "Authorization: OIOzkfiZzrzrIIejj" http://localhost:8787/api/admin/comment/foo

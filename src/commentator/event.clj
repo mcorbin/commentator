@@ -3,7 +3,8 @@
             [cheshire.core :as json]
             [commentator.log :as log]
             [commentator.store :as store]
-            [exoscale.coax :as coax])
+            [exoscale.coax :as coax]
+            [exoscale.ex :as ex])
   (:import java.util.UUID))
 
 (def event-file-name "events.json")
@@ -27,7 +28,7 @@
 (defprotocol IEventManager
   (add-event [this event])
   (list-events [this])
-  (purge [this min-date]))
+  (delete-event [this event-id]))
 
 (defrecord EventManager [s3]
   IEventManager
@@ -49,6 +50,16 @@
            (json/parse-string true)
            vec))
       []))
-  (purge [this min-date]
-
-    ))
+  (delete-event [this event-id]
+    (if (store/exists? s3 event-file-name)
+      (let [events (->> (list-events this)
+                        (remove #(= (:id %) event-id)))]
+        ;; TODO: throw if not found
+        (store/save-resource s3
+                             event-file-name
+                             (json/generate-string events))
+        (log/info {:event-id event-id}
+                  (format "Event %s deleted" event-id)))
+      (throw (ex/ex-not-found (format "Event %s not found"
+                                      event-id)
+                              {:event-id event-id})))))

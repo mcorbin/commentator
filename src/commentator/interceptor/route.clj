@@ -5,7 +5,8 @@
             [commentator.log :as log]))
 
 (def admin-calls #{:comment/get :comment/approve :comment/delete-article
-                   :comment/delete :comment/admin-for-article :event/list})
+                   :comment/delete :comment/admin-for-article :event/list
+                   :event/delete})
 
 (def v1
   {[#"/comment/" :article #"/?"] {:post :comment/new}
@@ -17,7 +18,8 @@
    [#"/comment/" :article "/" :comment-id #"/?"] {:post :comment/approve}
    [#"/comment/" :article #"/?"] {:delete :comment/delete-article}
    [#"/comment/" :article "/" :comment-id #"/?"] {:delete :comment/delete}
-   [#"/event/?"] {:get :event/list}})
+   [#"/event/?"] {:get :event/list}
+   [#"/event/" :event-id] {:delete :event/delete}})
 
 (def routes
   ["/"
@@ -44,6 +46,7 @@
       :comment/delete-article (handler/delete-article-comments handler request)
       :comment/admin-for-article (handler/comments-for-article handler request true)
       :event/list (handler/list-events handler request)
+      :event/delete (handler/delete-event handler request)
       :system/healthz (handler/healthz handler request)
       :system/metrics ""
       :system/not-found (handler/not-found handler request)

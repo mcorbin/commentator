@@ -19,6 +19,7 @@
   (delete-article-comments [this request] "Delete all comments for an article")
   (approve-comment [this request] "Approve a comment")
   (list-events [this request] "List all events")
+  (delete-event [this request] "Delete a specific event")
   (healthz [this request] "Healthz endpoint")
   (metrics [this request] "Metric endpoint")
   (not-found [this request] "Not found response"))
@@ -32,6 +33,13 @@
   (let [comment-id (->> (get-in request [:route-params :comment-id])
                         (coax/coerce ::cc/id))]
     (ex/assert-spec-valid ::cc/id comment-id)
+    comment-id))
+
+(defn req->event-id
+  [request]
+  (let [comment-id (->> (get-in request [:route-params :event-id])
+                        (coax/coerce ::ce/id))]
+    (ex/assert-spec-valid ::ce/id comment-id)
     comment-id))
 
 (defrecord Handler [comment-manager event-manager rate-limiter challenges]
@@ -96,6 +104,12 @@
   (list-events [this request]
     {:status 200
      :body (ce/list-events event-manager)})
+
+  (delete-event [this request]
+    (let [event-id (req->event-id request)]
+      (ce/delete-event event-manager event-id)
+      {:status 200
+       :body {:message "Event deleted"}}))
 
   ;; TODO
   (metrics [this request]
