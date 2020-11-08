@@ -1,10 +1,16 @@
 {:http {:host "127.0.0.1"
         :port 8787}
  :admin {:token #secret "OIOzkfiZzrzrIIejj"}
- :store {:access-key #secret "foo"
-         :secret-key #secret "bar"
-         :endpoint "foo.com"}
- :logging {:level "debug"
+ :store {:access-key #secret #env ACCESS_KEY
+         :secret-key #secret #env SECRET_KEY
+         :endpoint "https://sos-ch-gva-2.exo.io"
+         :bucket "mcorbin.fr.test.comment"}
+ :comment {:auto-approve false
+           :allowed-articles ["foo" "bar"]}
+ :logging {:level "info"
            :console true
            :overrides {:org.eclipse.jetty "info"
-                       :org.apache.http "error"}}}
+                       :org.apache.http "error"}}
+ :challenges {:op1 {:question "1 + 4 = ?"
+                    :answer "5"}}
+ }

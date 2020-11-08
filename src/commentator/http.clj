@@ -11,7 +11,7 @@
             [ring.adapter.jetty :as jetty]))
 
 (defn interceptor-handler
-  [token]
+  [token handler]
   (let [interceptors
         [itc-response/response ;;leave
          itc-json/json ;; leave
@@ -20,17 +20,23 @@
          itc-ring/cookies ;; enter + leave
          itc-ring/params ;; enter
          itc-ring/keyword-params ;; enter
+         itc-json/request-params ;; enter
          itc-route/match-route ;; enter
-         (itc-auth/auth token)
-         itc-route/route ;; enter
+         (itc-auth/auth token) ;; enter
+         (itc-route/route handler) ;; enter
          ]]
     (fn handler [request]
       (interceptor/execute {:request request} interceptors))))
 
-(defrecord Server [host port server token]
+(defrecord Server [host port token handler server]
   component/Lifecycle
   (start [this]
     (assoc this :server
-           (jetty/run-jetty (interceptor-handler token))))
-  (stop [this])
-  )
+           (jetty/run-jetty (interceptor-handler token handler)
+                            {:join? false
+                             :host host
+                             :port port})))
+  (stop [this]
+    (when server
+      (.stop server))
+    (assoc this :server nil)))

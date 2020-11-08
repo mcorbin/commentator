@@ -1,4 +1,5 @@
 (ns commentator.store
+  "The store component is responsible for storing resources."
   (:require [amazonica.aws.s3 :as s3]
             [exoscale.cloak :as cloak])
   (:import java.io.ByteArrayInputStream
@@ -7,47 +8,44 @@
            org.apache.commons.io.IOUtils))
 
 (defprotocol IStoreOperator
-  (exists? [this resource-name])
-  (get-resource [this resource-name])
-  (save-resource [this resource-name content])
-  (delete-resource [this resource-name]))
-
-(defn file-key
-  [bucket n]
-  (str bucket "/" n))
+  (exists? [this resource-name] "Checks if a retourne exists")
+  (get-resource [this resource-name] "Get a retourne by name")
+  (save-resource [this resource-name content] "Save a resource")
+  (delete-resource [this resource-name] "Delete a resource"))
 
 (defn exists?-s3
   "Checks if a file exists in s3"
   [credentials bucket resource-name]
   (s3/does-object-exist (cloak/unmask credentials)
                         bucket
-                        (file-key bucket resource-name)))
+                        resource-name))
 
 (defn get-resource-from-3
   "Get a file from s3."
   [credentials bucket resource-name]
-  (IOUtils/toByteArray
-   (:object-content
-    (s3/get-object (cloak/unmask credentials)
-                   :bucket-name bucket
-                   :key (file-key bucket resource-name)))))
+  (String.
+   (IOUtils/toByteArray
+    (:object-content
+     (s3/get-object (cloak/unmask credentials)
+                    :bucket-name bucket
+                    :key resource-name)))))
 
 (defn delete-resource-from-s3
   "Delete a file from s3"
   [credentials bucket resource-name]
   (s3/delete-object (cloak/unmask credentials)
                     :bucket-name bucket
-                    :key (file-key bucket resource-name)))
+                    :key resource-name))
 
 (defn save-on-s3
   "Creates a new S3 file."
   [credentials bucket resource-name ^String content]
-  (let [bytes (.getBytes content "UTF-16")
+  (let [bytes (.getBytes content "UTF-8")
         input-stream (ByteArrayInputStream. bytes)
         digest (DigestUtils/md5 bytes)]
     (s3/put-object (cloak/unmask credentials)
                    :bucket-name bucket
-                   :key (file-key bucket resource-name)
+                   :key resource-name
                    :input-stream input-stream
                    :metadata {:content-length (alength bytes)
                               :content-md5 (String. (Base64/encodeBase64

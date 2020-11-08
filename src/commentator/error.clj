@@ -1,8 +1,8 @@
 (ns commentator.error
   (:require [commentator.log :as log]
             [cheshire.core :as json]
-            [exoscale.ex :as ex]
-            [clojure.spec.alpha :as s]))
+            [clojure.string :as string]
+            [exoscale.ex :as ex]))
 
 (def default-msg
   "Internal error.")
@@ -80,14 +80,13 @@
       (doseq [msg messages]
         (println (format " - %s"  msg))))))
 
-(defn explain->message
-  "
-  Produce an error message out from an explain data.
-  "
-  ([explain] (explain->message explain {}))
-  ([explain problem-map]
-   (when-let [problems (get explain ::s/problems)]
-     (problems->message problems problem-map))))
+(defn spec-ex->message
+  [e]
+  (->> (ex-data e)
+       :explain-data
+       :clojure.spec.alpha/problems
+       (map #(problem->message % default-problem-map))
+       (string/join ", ")))
 
 (ex/derive ::ex/unavailable ::user)
 (ex/derive ::ex/interrupted ::user)
@@ -112,6 +111,19 @@
    ::ex/fault 500
    ::ex/busy 500})
 
+(defn handle-spec-error
+  [request ^Exception e]
+  (let [message (spec-ex->message e)
+        data (ex-data e)
+        status 400]
+    (log/error (merge (log/req-ctx request)
+                      data)
+               e
+               "http error"
+               status)
+    {:status status
+     :body {:error message}}))
+
 (defn handle-user-error
   [request ^Exception e]
   (let [message (.getMessage e)
@@ -122,9 +134,8 @@
                e
                "http error"
                status)
-    ;(metric/http-errors request status)
     {:status status
-     :body {:errors [{:detail message}]}}))
+     :body {:error message}}))
 
 (defn handle-unexpected-error
   [request ^Exception e]
@@ -133,4 +144,4 @@
              e "http error")
   ;(metric/http-errors request 500)
   {:status 500
-   :body {:errors [{:detail default-msg}]}})
+   :body {:error default-msg}})

@@ -1,5 +1,6 @@
 (ns commentator.interceptor.auth
-  (:require [exoscale.cloak :as cloak]
+  (:require [commentator.interceptor.route :as route]
+            [exoscale.cloak :as cloak]
             [exoscale.ex :as ex]))
 
 (defn get-auth-token
@@ -12,7 +13,7 @@
   {:name ::auth
    :enter (fn [ctx]
             (let [request (:request ctx)
-                  admin? (get-in request [:handler :admin?])
+                  admin? (route/admin-calls (:handler request))
                   request-token (get-auth-token request)]
               (when (and admin?
                          (not= (cloak/unmask token) request-token))
