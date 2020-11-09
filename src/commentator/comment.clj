@@ -47,8 +47,9 @@
 
 (defn sanitize
   [comment]
-  (-> (update comment :author escape-html)
-      (update :content escape-html)))
+  (when (and (:author comment) (:content comment))
+    (-> (update comment :author escape-html)
+        (update :content escape-html))))
 
 (defn article-file-name
   [article]
@@ -96,18 +97,18 @@
     (allowed? allowed-articles article)
     (locking lock
       (if (article-exists? this article)
-        (do (c/evict cache article)
-            (let [comments (for-article this article true)]
-              (store/save-resource s3
-                                   (article-file-name article)
-                                   (-> (conj comments
-                                             (assoc comment :approved auto-approve))
-                                       json/generate-string))))
+        (let [comments (for-article this article true)]
+          (store/save-resource s3
+                               (article-file-name article)
+                               (-> (conj comments
+                                         (assoc comment :approved auto-approve))
+                                   json/generate-string)))
         ;; first comment for this article
         (store/save-resource s3
                              (article-file-name article)
                              (-> [comment]
-                                 json/generate-string))))
+                                 json/generate-string)))
+      (c/evict cache article))
     (log/info {:comment-id (:id comment)
                :article article}
               (format "New comment %s for article %s" (:id comment) article)))
@@ -115,28 +116,28 @@
   (approve-comment [this article comment-id]
     (locking lock
       (if (article-exists? this article)
-        (do (c/evict cache article)
-            (let [{:keys [found comments]}
-                  (->> (for-article this article true)
-                       (reduce (fn [state comment]
-                                 (if (= (:id comment) comment-id)
-                                   (-> (assoc state :found true)
-                                       (update :comments conj (assoc comment :approved true)))
-                                   (update state :comments conj comment)))
-                               {:found false
-                                :comments []}))]
-              (when-not found
-                (throw (ex/ex-not-found (format "Comment %s not found for article %s"
-                                                comment-id
-                                                article)
-                                        {:article article
-                                         :comment-id comment-id})))
-              (store/save-resource s3
-                                   (article-file-name article)
-                                   (json/generate-string comments))
-              (log/info {:comment-id comment-id
-                         :article article}
-                        (format "Comment %s for article %s approved" comment-id article))))
+        (let [{:keys [found comments]}
+              (->> (for-article this article true)
+                   (reduce (fn [state comment]
+                             (if (= (:id comment) comment-id)
+                               (-> (assoc state :found true)
+                                   (update :comments conj (assoc comment :approved true)))
+                               (update state :comments conj comment)))
+                           {:found false
+                            :comments []}))]
+          (when-not found
+            (throw (ex/ex-not-found (format "Comment %s not found for article %s"
+                                            comment-id
+                                            article)
+                                    {:article article
+                                     :comment-id comment-id})))
+            (store/save-resource s3
+                                 (article-file-name article)
+                                 (json/generate-string comments))
+            (c/evict cache article)
+            (log/info {:comment-id comment-id
+                       :article article}
+                      (format "Comment %s for article %s approved" comment-id article)))
         (throw (ex/ex-not-found (format "No comment for article %s"
                                         article)
                                 {:article article
@@ -145,16 +146,16 @@
   (delete-comment [this article comment-id]
     (locking lock
       (if (article-exists? this article)
-        (do (c/evict cache article)
-            (let [comments (->> (for-article this article true)
-                                (remove #(= (:id %) comment-id)))]
-              ;; TODO: throw if not found
-              (store/save-resource s3
-                                   (article-file-name article)
-                                   (json/generate-string comments))
-              (log/info {:comment-id comment-id
-                         :article article}
-                        (format "Comment %s for article %s deleted" comment-id article))))
+        (let [comments (->> (for-article this article true)
+                            (remove #(= (:id %) comment-id)))]
+          ;; TODO: throw if not found
+          (store/save-resource s3
+                               (article-file-name article)
+                               (json/generate-string comments))
+          (c/evict cache article)
+          (log/info {:comment-id comment-id
+                     :article article}
+                    (format "Comment %s for article %s deleted" comment-id article)))
         (throw (ex/ex-not-found (format "No comment for article %s"
                                         article)
                                 {:article article

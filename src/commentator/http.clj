@@ -14,6 +14,7 @@
   [token handler]
   (let [interceptors
         [itc-response/response ;;leave
+         itc-ring/cors ;; leave
          itc-json/json ;; leave
          itc-error/error ;; error
          itc-id/request-id ;;enter

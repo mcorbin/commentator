@@ -10,6 +10,7 @@
 
 (def v1
   {[#"/comment/" :article #"/?"] {:post :comment/new}
+   [#"/challenge/?"] {:get :challenge/random}
    [#"/comment/" :article #"/?"] {:get :comment/for-article}})
 
 (def admin
@@ -45,6 +46,7 @@
       :comment/delete (handler/delete-comment handler request)
       :comment/delete-article (handler/delete-article-comments handler request)
       :comment/admin-for-article (handler/comments-for-article handler request true)
+      :challenge/random (handler/random-challenge handler request)
       :event/list (handler/list-events handler request)
       :event/delete (handler/delete-event handler request)
       :system/healthz (handler/healthz handler request)

@@ -11,6 +11,10 @@ http://localhost:8787/api/v1/comment/foo/
 
 curl http://localhost:8787/api/v1/comment/foo
 
+#### Get a random challenge
+
+curl http://localhost:8787/api/v1/challenge
+
 ## Admin API
 
 ### List events
@@ -41,5 +45,7 @@ http://localhost:8787/api/admin/comment/foo/565f9cfa-0b22-4870-9e89-67c1dbd710ec
 curl -X DELETE -H "Authorization: OIOzkfiZzrzrIIejj" \
 http://localhost:8787/api/admin/comment/foo/565f9cfa-0b22-4870-9e89-67c1dbd710ec
 
+### Delete all comment for an article
 
-
+curl -X DELETE -H "Authorization: OIOzkfiZzrzrIIejj" \
+http://localhost:8787/api/admin/comment/foo/

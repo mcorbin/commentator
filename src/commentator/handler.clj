@@ -18,6 +18,7 @@
   (delete-comment [this request] "Delete a comment")
   (delete-article-comments [this request] "Delete all comments for an article")
   (approve-comment [this request] "Approve a comment")
+  (random-challenge [this request] "get a random challenge")
   (list-events [this request] "List all events")
   (delete-event [this request] "Delete a specific event")
   (healthz [this request] "Healthz endpoint")
@@ -100,6 +101,12 @@
           comment-id (req->comment-id request)]
       (cc/approve-comment comment-manager article comment-id)
       {:status 200 :body {:message "Comment approved"}}))
+
+  (random-challenge [this request]
+    (let [challenge (challenge/random challenges)]
+      {:status 200
+       :body {:name challenge
+              :question (get-in challenges [challenge :question])}}))
 
   (list-events [this request]
     {:status 200

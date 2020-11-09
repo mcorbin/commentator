@@ -12,5 +12,4 @@
            :overrides {:org.eclipse.jetty "info"
                        :org.apache.http "error"}}
  :challenges {:op1 {:question "1 + 4 = ?"
-                    :answer "5"}}
- }
+                    :answer "5"}}}

@@ -1,0 +1,90 @@
+<!--This is what happens when a backend dev does frontend-->
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+    $( document ).ready(function() {
+        $.get("http://localhost:8787/api/v1/challenge", function(data) {
+            $('#challenge_question').text(data.question);
+            $('#challenge_name span').text(data.name);
+        });
+        $.get("http://localhost:8787/api/v1/comment/foo", function(data) {
+            for (i=0; i<data.length; i++) {
+
+                response = data[i];
+                author = document.createElement('p');
+                author.className="comment_author";
+                author.textContent=response.author;
+
+                d = new Date(response.timestamp);
+                datestring = d.getFullYear() + "/" + (d.getMonth()+1) + "/" + d.getDate() + " " + d.getHours() + "h" + d.getMinutes();
+
+                date = document.createElement('p');
+                date.className="comment_date";
+                date.textContent=datestring;
+
+                content = document.createElement('p');
+                content.className="comment_content";
+                content.textContent=response.content;
+                content.style="white-space: pre-wrap;";
+
+
+                comment = document.createElement('div');
+                comment.className="comment";
+
+                comment.appendChild(author);
+                comment.appendChild(date);
+                comment.appendChild(content);
+
+                document.getElementById('comments_list').appendChild(comment);
+            }
+        });
+    });
+    $(function(){
+        $('#comment_create').on('click', function(){
+            $.ajax
+            ({
+                type: "POST",
+                url: "http://localhost:8787/api/v1/comment/foo",
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify({"author": $("#comment_author").val(),
+                                      "content" : $("#comment_content").val(),
+                                      "challenge" : $("#challenge_name span").text(),
+                                      "answer" : $("#challenge_answer").val()}),
+                success: function () {
+                    $('#comment_result span').text("Comment added");
+                },
+                error: function () {
+                    $('#comment_result span').text("Fail to add the comment");
+                }
+            })
+        });
+    });
+  </script>
+</head>
+<div id="comment_block">
+  <div id="new_comment">
+
+    <div id="challenge_name" style="visibility: hidden">
+      <span  style="visibility: hidden"></span>
+    </div>
+    <label for="comment_author">Author:</label><br>
+    <input type="text" id="comment_author" name="author" size="40"><br><br>
+    <label for="challenge_question">Answer this question:</label><br>
+    <span id="challenge_question"></span><br/>
+    <input type="text" id="challenge_answer" name="challenge_answer" size="40"><br><br>
+
+    <label for="comment_content">Content:</label><br>
+    <textarea id="comment_content", name="comment_content" cols="80" rows="10"></textarea>
+    <br><br>
+    <input id="comment_create" type="button" value="Create" />
+    <div id="comment_result">
+      <span></span>
+    </div>
+  </div>
+
+  <div id="comments_list">
+    <h3>Comments</h3>
+  </div>
+
+</div>
