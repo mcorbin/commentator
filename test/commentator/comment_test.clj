@@ -30,6 +30,7 @@
 (deftest article-exists-test
   (let [store (ms/store-mock {:exists? (constantly true)})
         mng (comment/map->CommentManager {:auto-approve false
+                                          :lock (Object.)
                                           :allowed-articles #{"foo"}
                                           :s3 store})]
     (is (comment/article-exists? mng "foo"))
@@ -48,6 +49,7 @@
                    :approved true}]
         store (ms/store-mock {:get-resource (constantly (js comments))})
         mng (comment/map->CommentManager {:auto-approve false
+                                          :lock (Object.)
                                           :allowed-articles #{"foo"}
                                           :s3 store})]
     (testing "filter non approved article"
@@ -71,6 +73,7 @@
     (let [store (ms/store-mock {:exists? (constantly true)
                                 :delete-resource (constantly true)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (comment/delete-article mng "foo")
@@ -84,6 +87,7 @@
     (let [store (ms/store-mock {:exists? (constantly false)
                                 :delete-resource (constantly true)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (comment/delete-article mng "foo")
@@ -96,6 +100,7 @@
   (testing "not allowed"
     (let [store (ms/store-mock {:exists? (constantly false)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (is (thrown-with-msg?
@@ -106,6 +111,7 @@
     (let [store (ms/store-mock {:exists? (constantly false)
                                 :save-resource (constantly true)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})
           comment {:id (UUID/randomUUID)}]
@@ -121,6 +127,7 @@
                                   :get-resource (constantly (js comments))
                                   :save-resource (constantly true)})
             mng (comment/map->CommentManager {:auto-approve false
+                                              :lock (Object.)
                                               :allowed-articles #{"foo"}
                                               :s3 store})
             comment {:id (UUID/randomUUID)
@@ -137,6 +144,7 @@
                                   :get-resource (constantly (js comments))
                                   :save-resource (constantly true)})
             mng (comment/map->CommentManager {:auto-approve true
+                                              :lock (Object.)
                                               :allowed-articles #{"foo"}
                                               :s3 store})
             comment {:id (UUID/randomUUID)
@@ -151,6 +159,7 @@
   (testing "article does not exist"
     (let [store (ms/store-mock {:exists? (constantly false)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (is (thrown-with-msg?
@@ -165,6 +174,7 @@
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js []))})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (is (thrown-with-msg?
@@ -181,6 +191,7 @@
                                 :get-resource (constantly (js [{:id id
                                                                 :approved false}]))})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (comment/approve-comment mng "foo" id)
@@ -201,6 +212,7 @@
                                 :save-resource (constantly true)
                                 :get-resource (constantly (js events))})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (comment/approve-comment mng "foo" id)
@@ -224,6 +236,7 @@
                                 :get-resource (constantly (js events))
                                 :save-resource (constantly true)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (comment/delete-comment mng "foo" id)
@@ -245,6 +258,7 @@
                                 :get-resource (constantly (js events))
                                 :save-resource (constantly true)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (comment/delete-comment mng "foo" id)
@@ -259,6 +273,7 @@
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly false)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (is (thrown-with-msg?
@@ -276,6 +291,7 @@
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js events))})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (is (= {:id id
@@ -293,6 +309,7 @@
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js events))})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (is (thrown-with-msg?
@@ -306,6 +323,7 @@
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly false)})
           mng (comment/map->CommentManager {:auto-approve false
+                                            :lock (Object.)
                                             :allowed-articles #{"foo"}
                                             :s3 store})]
       (is (thrown-with-msg?

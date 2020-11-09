@@ -1,6 +1,7 @@
 (ns commentator.event
   (:require [clojure.spec.alpha :as s]
             [cheshire.core :as json]
+            [com.stuartsierra.component :as component]
             [commentator.log :as log]
             [commentator.store :as store]
             [exoscale.coax :as coax]
@@ -30,18 +31,19 @@
   (list-events [this])
   (delete-event [this event-id]))
 
-(defrecord EventManager [s3]
+(defrecord EventManager [s3 lock]
   IEventManager
   (add-event [this event]
-    (let [events (list-events this)]
-      (store/save-resource s3
-                           event-file-name
-                           (-> (conj events event)
-                               json/generate-string))
-      (log/info {:event-id (:id event)
-                 :event-type (:type event)}
-                (format "publish event %s" (:id event)))
-      true))
+    (locking lock
+      (let [events (list-events this)]
+        (store/save-resource s3
+                             event-file-name
+                             (-> (conj events event)
+                                 json/generate-string))
+        (log/info {:event-id (:id event)
+                   :event-type (:type event)}
+                  (format "publish event %s" (:id event)))
+        true)))
   (list-events [this]
     (if (store/exists? s3 event-file-name)
       (coax/coerce
@@ -51,15 +53,21 @@
            vec))
       []))
   (delete-event [this event-id]
-    (if (store/exists? s3 event-file-name)
-      (let [events (->> (list-events this)
-                        (remove #(= (:id %) event-id)))]
-        ;; TODO: throw if not found
-        (store/save-resource s3
-                             event-file-name
-                             (json/generate-string events))
-        (log/info {:event-id event-id}
-                  (format "Event %s deleted" event-id)))
-      (throw (ex/ex-not-found (format "Event %s not found"
-                                      event-id)
-                              {:event-id event-id})))))
+    (locking lock
+      (if (store/exists? s3 event-file-name)
+        (let [events (->> (list-events this)
+                          (remove #(= (:id %) event-id)))]
+          ;; TODO: throw if not found
+          (store/save-resource s3
+                               event-file-name
+                               (json/generate-string events))
+          (log/info {:event-id event-id}
+                    (format "Event %s deleted" event-id)))
+        (throw (ex/ex-not-found (format "Event %s not found"
+                                        event-id)
+                                {:event-id event-id})))))
+  component/Lifecycle
+  (start [this]
+    (assoc this :lock (Object.)))
+  (stop [this]
+    (assoc this :lock false)))

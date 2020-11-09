@@ -21,7 +21,8 @@
                    :type :new-comment}]
           store (ms/store-mock {:get-resource (constantly (js events))
                                 :exists? (constantly true)})
-          mng (event/map->EventManager {:s3 store})]
+          mng (event/map->EventManager {:s3 store
+                                        :lock (Object.)})]
       (is (= events (event/list-events mng)))))
   (testing "No events"
     (let [store (ms/store-mock {:exists? (constantly false)})
@@ -42,7 +43,8 @@
           store (ms/store-mock {:get-resource (constantly (js events))
                                 :save-resource (constantly true)
                                 :exists? (constantly true)})
-          mng (event/map->EventManager {:s3 store})]
+          mng (event/map->EventManager {:s3 store
+                                        :lock (Object.)})]
       (event/add-event mng event)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
@@ -54,7 +56,8 @@
           event {:id (UUID/randomUUID)
                  :timestamp (System/currentTimeMillis)
                  :type :new-comment}
-          mng (event/map->EventManager {:s3 store})]
+          mng (event/map->EventManager {:s3 store
+                                        :lock (Object.)})]
       (event/add-event mng event)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
@@ -73,7 +76,8 @@
           store (ms/store-mock {:get-resource (constantly (js events))
                                 :save-resource (constantly true)
                                 :exists? (constantly true)})
-          mng (event/map->EventManager {:s3 store})]
+          mng (event/map->EventManager {:s3 store
+                                        :lock (Object.)})]
       (event/delete-event mng id)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
@@ -82,7 +86,8 @@
   (testing "No event"
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly false)})
-          mng (event/map->EventManager {:s3 store})]
+          mng (event/map->EventManager {:s3 store
+                                        :lock (Object.)})]
       (is (thrown-with-msg?
            Exception
            #"not found"
