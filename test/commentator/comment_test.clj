@@ -3,6 +3,7 @@
             [clojure.test :refer :all]
             [commentator.comment :as comment]
             [commentator.mock.s3 :as ms]
+            [com.stuartsierra.component :as component]
             [spy.assert :as assert]
             [spy.protocol :as protocol])
   (:import java.util.UUID))
@@ -27,12 +28,16 @@
        #"Invalid article bar"
        (comment/allowed? #{"foo"} "bar"))))
 
+(defn test-mng
+  ([store] (test-mng store false #{"foo"}))
+  ([store auto-approve allowed-articles]
+   (component/start (comment/map->CommentManager {:auto-approve auto-approve
+                                                  :allowed-articles allowed-articles
+                                                  :s3 store}))))
+
 (deftest article-exists-test
   (let [store (ms/store-mock {:exists? (constantly true)})
-        mng (comment/map->CommentManager {:auto-approve false
-                                          :lock (Object.)
-                                          :allowed-articles #{"foo"}
-                                          :s3 store})]
+        mng (test-mng store)]
     (is (comment/article-exists? mng "foo"))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
@@ -48,20 +53,39 @@
                   {:id (UUID/randomUUID)
                    :approved true}]
         store (ms/store-mock {:get-resource (constantly (js comments))})
-        mng (comment/map->CommentManager {:auto-approve false
-                                          :lock (Object.)
-                                          :allowed-articles #{"foo"}
-                                          :s3 store})]
+        mng (test-mng store)]
     (testing "filter non approved article"
         (is (= [(second comments)]
                (comment/for-article mng "foo")))
         (assert/called-with? (:get-resource (protocol/spies store))
                              store
-                             "foo.json"))
+                             "foo.json")
+        (assert/called-n-times? (:get-resource (protocol/spies store)) 1))
     (testing "get all articles"
         (is (= comments
                (comment/for-article mng "foo" true)))
-        (assert/called-n-times? (:get-resource (protocol/spies store)) 2))
+        ;; hit the cache
+        (assert/called-n-times? (:get-resource (protocol/spies store)) 1))
+
+    (is (thrown-with-msg?
+         Exception
+         #"Invalid article bar"
+         (comment/for-article mng "bar")))))
+
+(deftest for-article-get-all-test
+  (let [comments [{:id (UUID/randomUUID)
+                   :approved false}
+                  {:id (UUID/randomUUID)
+                   :approved true}]
+        store (ms/store-mock {:get-resource (constantly (js comments))})
+        mng (test-mng store)]
+    (testing "get all articles"
+        (is (= comments
+               (comment/for-article mng "foo" true)))
+        (assert/called-with? (:get-resource (protocol/spies store))
+                             store
+                             "foo.json")
+        (assert/called-n-times? (:get-resource (protocol/spies store)) 1))
 
     (is (thrown-with-msg?
          Exception
@@ -72,10 +96,7 @@
   (testing "article exists"
     (let [store (ms/store-mock {:exists? (constantly true)
                                 :delete-resource (constantly true)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (comment/delete-article mng "foo")
       (assert/called-with? (:exists? (protocol/spies store))
                            store
@@ -86,10 +107,7 @@
   (testing "article does not exist"
     (let [store (ms/store-mock {:exists? (constantly false)
                                 :delete-resource (constantly true)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (comment/delete-article mng "foo")
       (assert/called-with? (:exists? (protocol/spies store))
                            store
@@ -99,10 +117,7 @@
 (deftest add-comment-test
   (testing "not allowed"
     (let [store (ms/store-mock {:exists? (constantly false)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (is (thrown-with-msg?
            Exception
            #"Invalid article bar"
@@ -110,10 +125,7 @@
   (testing "first comment added"
     (let [store (ms/store-mock {:exists? (constantly false)
                                 :save-resource (constantly true)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})
+          mng (test-mng store)
           comment {:id (UUID/randomUUID)}]
       (comment/add-comment mng "foo" comment)
       (assert/called-with? (:save-resource (protocol/spies store))
@@ -126,10 +138,7 @@
             store (ms/store-mock {:exists? (constantly true)
                                   :get-resource (constantly (js comments))
                                   :save-resource (constantly true)})
-            mng (comment/map->CommentManager {:auto-approve false
-                                              :lock (Object.)
-                                              :allowed-articles #{"foo"}
-                                              :s3 store})
+            mng (test-mng store)
             comment {:id (UUID/randomUUID)
                      :approved true}]
         (comment/add-comment mng "foo" comment)
@@ -143,10 +152,7 @@
             store (ms/store-mock {:exists? (constantly true)
                                   :get-resource (constantly (js comments))
                                   :save-resource (constantly true)})
-            mng (comment/map->CommentManager {:auto-approve true
-                                              :lock (Object.)
-                                              :allowed-articles #{"foo"}
-                                              :s3 store})
+            mng (test-mng store true #{"foo"})
             comment {:id (UUID/randomUUID)
                      :approved false}]
         (comment/add-comment mng "foo" comment)
@@ -158,10 +164,7 @@
 (deftest approve-comment-test
   (testing "article does not exist"
     (let [store (ms/store-mock {:exists? (constantly false)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (is (thrown-with-msg?
            Exception
            #"No comment for article foo"
@@ -173,10 +176,7 @@
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js []))})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (is (thrown-with-msg?
            Exception
            #"not found for article foo"
@@ -190,10 +190,7 @@
                                 :save-resource (constantly true)
                                 :get-resource (constantly (js [{:id id
                                                                 :approved false}]))})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (comment/approve-comment mng "foo" id)
       (assert/called-with? (:exists? (protocol/spies store))
                            store
@@ -211,10 +208,7 @@
           store (ms/store-mock {:exists? (constantly true)
                                 :save-resource (constantly true)
                                 :get-resource (constantly (js events))})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (comment/approve-comment mng "foo" id)
       (assert/called-with? (:exists? (protocol/spies store))
                            store
@@ -235,10 +229,7 @@
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js events))
                                 :save-resource (constantly true)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (comment/delete-comment mng "foo" id)
       (assert/called-with? (:exists? (protocol/spies store))
                            store
@@ -246,8 +237,7 @@
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
                            "foo.json"
-                           (json/generate-string [(last events)])
-                           )))
+                           (json/generate-string [(last events)]))))
   (testing "article exists, comment does not exist"
     (let [id (UUID/randomUUID)
           events [{:id (UUID/randomUUID)
@@ -257,10 +247,7 @@
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js events))
                                 :save-resource (constantly true)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (comment/delete-comment mng "foo" id)
       (assert/called-with? (:exists? (protocol/spies store))
                            store
@@ -272,10 +259,7 @@
   (testing "article does not exist"
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly false)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (is (thrown-with-msg?
            Exception
            #"No comment for article foo"
@@ -290,10 +274,7 @@
                    :approved false}]
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js events))})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (is (= {:id id
               :approved false}
              (comment/get-comment mng "foo" id)))
@@ -308,10 +289,7 @@
                    :approved false}]
           store (ms/store-mock {:exists? (constantly true)
                                 :get-resource (constantly (js events))})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (is (thrown-with-msg?
            Exception
            #"not found for article foo"
@@ -322,10 +300,7 @@
   (testing "article does not exist"
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly false)})
-          mng (comment/map->CommentManager {:auto-approve false
-                                            :lock (Object.)
-                                            :allowed-articles #{"foo"}
-                                            :s3 store})]
+          mng (test-mng store)]
       (is (thrown-with-msg?
            Exception
            #"No comment for article foo"
