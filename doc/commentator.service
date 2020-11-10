@@ -1,0 +1,16 @@
+[Unit]
+Description=Your favorite commenting system
+After=network.target
+ConditionPathExists=/etc/commentator/commentator.edn
+
+[Service]
+User=commentator
+Environment=COMMENTATOR_CONFIGURATION=/etc/commentator/commentator.edn
+Environment=ACCESS_KEY=value
+Environment=SECRET_KEY=value
+Group=commentator
+ExecStart=/usr/bin/java -Xms300m -Xmx300m -XX:+ExitOnOutOfMemoryError -jar /opt/commentator.jar
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
