@@ -30,6 +30,8 @@
     [this article]
     [this article all?]
     "Returns all comments for an article. The all? parameter can be set to true in order to return all comments, approved or not")
+  ;; todo refactor
+  (safe-for-article [this article all?] "Get comments for an article")
   (delete-article [this article] "Delete all comments for an article")
   (approve-comment [this article comment-id] "Approve a comment for an article")
   (add-comment [this article comment] "Add a comment for an article")
@@ -75,10 +77,11 @@
     (let [{:keys [comments from-cache]}
           (if-let [cache-comments (c/lookup cache article)]
             {:comments cache-comments :from-cache true}
-            {:comments (coax/coerce
-                        ::comments
-                        (-> (store/get-resource s3 (article-file-name article))
-                            (json/parse-string true)))
+            {:comments
+             (coax/coerce
+              ::comments
+              (-> (store/get-resource s3 (article-file-name article))
+                  (json/parse-string true)))
              :from-cache false})]
       (when-not from-cache
         ;; update the cache if the value was retrieved from s3
@@ -87,6 +90,11 @@
         (vec comments)
         (vec (filter :approved comments)))))
 
+  (safe-for-article [this article all?]
+    (if (article-exists? this article)
+      (for-article this article all?)
+      []))
+  
   (delete-article [this article]
     (locking lock
       (when (article-exists? this article)
