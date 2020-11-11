@@ -8,6 +8,8 @@ It implements rate limiting, in memory cache of articles, challenges to avoid sp
 
 Still WIP, doc etc... will arrive soon.
 
+More info (in french) at https://mcorbin.fr/posts/2020-11-11-commentator/
+
 ## Public API
 
 ### Add comment
