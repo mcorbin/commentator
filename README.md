@@ -1,5 +1,13 @@
 # Commentator
 
+A commenting system for your blog.
+
+Comments are stored on any S3-compatible store.
+
+It implements rate limiting, in memory cache of articles, challenges to avoid spammers.
+
+Still WIP, doc etc... will arrive soon.
+
 ## Public API
 
 ### Add comment
