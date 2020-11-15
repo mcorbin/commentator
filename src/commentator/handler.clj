@@ -83,7 +83,7 @@
   (comments-for-article [this request all?]
     (let [article (req->article request)]
       {:status 200
-       :body (cc/safe-for-article comment-manager article all?)}))
+       :body (cc/for-article comment-manager article all?)}))
 
   (delete-comment [this request]
     (let [article (req->article request)

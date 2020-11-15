@@ -35,9 +35,9 @@
   [request handler]
   ;; double :handler because of bidi
   (let [req-handler (:handler request)]
-    (log/info (merge {:handler req-handler}
-                     (log/req-ctx request))
-              (format "http request %s" req-handler))
+    (log/debug (merge {:handler req-handler}
+                      (log/req-ctx request))
+               (format "http request %s" req-handler))
     (condp = req-handler
       :comment/new (handler/new-comment handler request)
       :comment/get (handler/get-comment handler request)

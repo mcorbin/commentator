@@ -30,8 +30,6 @@
     [this article]
     [this article all?]
     "Returns all comments for an article. The all? parameter can be set to true in order to return all comments, approved or not")
-  ;; todo refactor
-  (safe-for-article [this article all?] "Get comments for an article")
   (delete-article [this article] "Delete all comments for an article")
   (approve-comment [this article comment-id] "Approve a comment for an article")
   (add-comment [this article comment] "Add a comment for an article")
@@ -90,11 +88,6 @@
         (if all?
           (vec comments)
           (vec (filter :approved comments))))
-      []))
-
-  (safe-for-article [this article all?]
-    (if (article-exists? this article)
-      (for-article this article all?)
       []))
 
   (delete-article [this article]
@@ -156,12 +149,18 @@
   (delete-comment [this article comment-id]
     (locking lock
       (if (article-exists? this article)
-        (let [comments (->> (for-article this article true)
-                            (remove #(= (:id %) comment-id)))]
-          ;; TODO: throw if not found
+        (let [comments (for-article this article true)
+              filtered (remove #(= (:id %) comment-id) comments)]
+          (when (= (count comments)
+                   (count filtered))
+            (throw (ex/ex-not-found (format "Comment %s not found for article %s"
+                                            comment-id
+                                            article)
+                                    {:comment-id comment-id
+                                     :article article})))
           (store/save-resource s3
                                (article-file-name article)
-                               (json/generate-string comments))
+                               (json/generate-string filtered))
           (c/evict cache article)
           (log/info {:comment-id comment-id
                      :article article}

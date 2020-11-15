@@ -48,36 +48,43 @@
   (json/generate-string data))
 
 (deftest for-article-test
-  (let [comments [{:id (UUID/randomUUID)
-                   :approved false}
-                  {:id (UUID/randomUUID)
-                   :approved true}]
-        store (ms/store-mock {:get-resource (constantly (js comments))})
-        mng (test-mng store)]
-    (testing "filter non approved article"
+  (testing "article exists"
+    (let [comments [{:id (UUID/randomUUID)
+                     :approved false}
+                    {:id (UUID/randomUUID)
+                     :approved true}]
+          store (ms/store-mock {:get-resource (constantly (js comments))
+                                :exists? (constantly true)})
+          mng (test-mng store)]
+      (testing "filter non approved article"
         (is (= [(second comments)]
                (comment/for-article mng "foo")))
         (assert/called-with? (:get-resource (protocol/spies store))
                              store
                              "foo.json")
         (assert/called-n-times? (:get-resource (protocol/spies store)) 1))
-    (testing "get all articles"
+      (testing "get all articles"
         (is (= comments
                (comment/for-article mng "foo" true)))
         ;; hit the cache
         (assert/called-n-times? (:get-resource (protocol/spies store)) 1))
 
-    (is (thrown-with-msg?
-         Exception
-         #"Invalid article bar"
-         (comment/for-article mng "bar")))))
+      (is (thrown-with-msg?
+           Exception
+           #"Invalid article bar"
+           (comment/for-article mng "bar")))))
+  (testing "article does not exist"
+    (let [store (ms/store-mock {:exists? (constantly false)})
+          mng (test-mng store)]
+      (is (= [] (comment/for-article mng "foo" true))))))
 
 (deftest for-article-get-all-test
   (let [comments [{:id (UUID/randomUUID)
                    :approved false}
                   {:id (UUID/randomUUID)
                    :approved true}]
-        store (ms/store-mock {:get-resource (constantly (js comments))})
+        store (ms/store-mock {:exists? (constantly true)
+                              :get-resource (constantly (js comments))})
         mng (test-mng store)]
     (testing "get all articles"
         (is (= comments
@@ -248,14 +255,14 @@
                                 :get-resource (constantly (js events))
                                 :save-resource (constantly true)})
           mng (test-mng store)]
-      (comment/delete-comment mng "foo" id)
+      (is (thrown-with-msg?
+           Exception
+           #"not found for article foo"
+           (comment/delete-comment mng "foo" id)))
       (assert/called-with? (:exists? (protocol/spies store))
                            store
                            "foo.json")
-      (assert/called-with? (:save-resource (protocol/spies store))
-                           store
-                           "foo.json"
-                           (json/generate-string events))))
+      (assert/not-called? (:save-resource (protocol/spies store)))))
   (testing "article does not exist"
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly false)})
