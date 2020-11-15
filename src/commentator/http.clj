@@ -1,6 +1,7 @@
 (ns commentator.http
   (:require [com.stuartsierra.component :as component]
             [commentator.interceptor.auth :as itc-auth]
+            [commentator.interceptor.cors :as itc-cors]
             [commentator.interceptor.error :as itc-error]
             [commentator.interceptor.id :as itc-id]
             [commentator.interceptor.json :as itc-json]
@@ -14,7 +15,7 @@
   [token handler]
   (let [interceptors
         [itc-response/response ;;leave
-         itc-ring/cors ;; leave
+         itc-cors/cors ;; leave
          itc-json/json ;; leave
          itc-error/error ;; error
          itc-id/request-id ;;enter
