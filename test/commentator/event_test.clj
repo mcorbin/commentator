@@ -91,4 +91,20 @@
       (is (thrown-with-msg?
            Exception
            #"not found"
+           (event/delete-event mng id)))))
+  (testing "Even does not exist"
+    (let [id (UUID/randomUUID)
+          events [{:id (UUID/randomUUID)
+                   :timestamp (System/currentTimeMillis)
+                   :type :new-comment}
+                  {:id (UUID/randomUUID)
+                   :timestamp (System/currentTimeMillis)
+                   :type :new-comment}]
+          store (ms/store-mock {:get-resource (constantly (js events))
+                                :exists? (constantly false)})
+          mng (event/map->EventManager {:s3 store
+                                        :lock (Object.)})]
+      (is (thrown-with-msg?
+           Exception
+           #"not found"
            (event/delete-event mng id))))))

@@ -55,12 +55,16 @@
   (delete-event [this event-id]
     (locking lock
       (if (store/exists? s3 event-file-name)
-        (let [events (->> (list-events this)
-                          (remove #(= (:id %) event-id)))]
-          ;; TODO: throw if not found
+        (let [events (list-events this)
+              filtered (remove #(= (:id %) event-id) events)]
+          (when (= (count events)
+                   (count filtered))
+            (throw (ex/ex-not-found (format "Event %s not found"
+                                            event-id)
+                                    {:event-id event-id})))
           (store/save-resource s3
                                event-file-name
-                               (json/generate-string events))
+                               (json/generate-string filtered))
           (log/info {:event-id event-id}
                     (format "Event %s deleted" event-id)))
         (throw (ex/ex-not-found (format "Event %s not found"

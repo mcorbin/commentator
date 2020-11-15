@@ -11,12 +11,12 @@
             [exoscale.ex :as ex]))
 
 (def COMMENT_MAX_SIZE 10000)
-;; 3 hours
-(def cache-ttl (* 1000 60 60 3))
+;; 24 hours
+(def cache-ttl (* 1000 60 60 24))
 
 (s/def ::id uuid?)
 (s/def ::content (s/and ::spec/non-empty-string
-                        #(< (:count % 10000))))
+                        #(< (:count %) 10000)))
 (s/def ::author ::spec/non-empty-string)
 (s/def ::timestamp pos-int?)
 (s/def ::approved boolean?)
@@ -74,27 +74,29 @@
 
   (for-article [this article all?]
     (allowed? allowed-articles article)
-    (let [{:keys [comments from-cache]}
-          (if-let [cache-comments (c/lookup cache article)]
-            {:comments cache-comments :from-cache true}
-            {:comments
-             (coax/coerce
-              ::comments
-              (-> (store/get-resource s3 (article-file-name article))
-                  (json/parse-string true)))
-             :from-cache false})]
-      (when-not from-cache
-        ;; update the cache if the value was retrieved from s3
-        (c/miss cache article comments))
-      (if all?
-        (vec comments)
-        (vec (filter :approved comments)))))
+    (if (article-exists? this article)
+      (let [{:keys [comments from-cache]}
+            (if-let [cache-comments (c/lookup cache article)]
+              {:comments cache-comments :from-cache true}
+              {:comments
+               (coax/coerce
+                ::comments
+                (-> (store/get-resource s3 (article-file-name article))
+                    (json/parse-string true)))
+               :from-cache false})]
+        (when-not from-cache
+          ;; update the cache if the value was retrieved from s3
+          (c/miss cache article comments))
+        (if all?
+          (vec comments)
+          (vec (filter :approved comments))))
+      []))
 
   (safe-for-article [this article all?]
     (if (article-exists? this article)
       (for-article this article all?)
       []))
-  
+
   (delete-article [this article]
     (locking lock
       (when (article-exists? this article)
