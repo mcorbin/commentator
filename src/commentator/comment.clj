@@ -16,7 +16,7 @@
 
 (s/def ::id uuid?)
 (s/def ::content (s/and ::spec/non-empty-string
-                        #(< (:count %) 10000)))
+                        #(< (count %) 10000)))
 (s/def ::author ::spec/non-empty-string)
 (s/def ::timestamp pos-int?)
 (s/def ::approved boolean?)
