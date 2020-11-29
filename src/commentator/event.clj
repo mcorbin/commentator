@@ -18,6 +18,7 @@
 (s/def ::events (s/coll-of ::event))
 
 (defn new-comment
+  "Generates an event for a new comment"
   [article id]
   {:timestamp (System/currentTimeMillis)
    :id (UUID/randomUUID)

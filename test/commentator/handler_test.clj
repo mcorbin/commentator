@@ -44,21 +44,34 @@
                                  :event-manager event-mng
                                  :challenges {:c1 {:question "foo" :answer "bar"}}
                                  :rate-limiter (component/start (rl/map->SimpleRateLimiter {}))})]
-    (h/new-comment handler {:body {:content "content"
-                                   :author "mcorbin"
-                                   :challenge :c1
-                                   :answer "bar"}
-                            :route-params {:article "foo"}})
+    (let [response (h/new-comment handler {:body {:content "content"
+                                                  :author "mcorbin"
+                                                  :challenge :c1
+                                                  :answer "bar"}
+                                           :route-params {:article "foo"}})]
+         (is (= {:status 201
+                 :body {:message "Comment added"}}
+                response)))
+    (Thread/sleep 100)
     (let [calls (spy/calls (:save-resource (protocol/spies store)))
           [p1 p2 p3] (first calls)
-          [c1 :as comments] (json/parse-string p3 true)]
-      (is (= 1 (count calls)))
+          [c1 :as comments] (json/parse-string p3 true)
+          [pe1 pe2 pe3] (second calls)
+          [e1 :as events] (json/parse-string pe3 true)]
+      ;; 1 event 1 comment
+      (is (= 2 (count calls)))
       (is (= store p1))
+      (is (= store pe1))
       (is (= "foo.json" p2))
+      (is (= "events.json" pe2))
       (is (= 1 (count comments)))
+      (is (= 1 (count events)))
       (is (= {:content "content"
               :author "mcorbin"
               :approved false}
              (select-keys c1 [:content :author :approved])))
       (is (uuid? (UUID/fromString (:id c1))))
-      (is (pos-int? (:timestamp c1))))))
+      (is (pos-int? (:timestamp c1)))
+      (is (= {:article "foo"
+              :type "new-comment"}
+             (select-keys e1 [:article :type]))))))
