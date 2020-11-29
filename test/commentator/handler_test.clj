@@ -75,3 +75,25 @@
       (is (= {:article "foo"
               :type "new-comment"}
              (select-keys e1 [:article :type]))))))
+
+(deftest get-comment-test
+  (let [id (UUID/randomUUID)
+        comments [{:id id
+                   :approved false}
+                  {:id (UUID/randomUUID)
+                   :approved false}]
+        store (ms/store-mock {:exists? (constantly true)
+                              :get-resource (constantly (ct/js comments))})
+        comment-mng (ct/test-mng store)
+        handler (h/map->Handler {:comment-manager comment-mng})]
+    (is (= {:status 200
+            :body {:id id
+                   :approved false}}
+           (h/get-comment handler {:route-params {:article "foo"
+                                                  :comment-id id}})))
+    (assert/called-with? (:exists? (protocol/spies store))
+                         store
+                         "foo.json")
+    (assert/called-with? (:get-resource (protocol/spies store))
+                         store
+                         "foo.json")))
