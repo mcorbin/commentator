@@ -97,3 +97,117 @@
     (assert/called-with? (:get-resource (protocol/spies store))
                          store
                          "foo.json")))
+
+(deftest comments-for-article-test
+  (let [id1 (UUID/randomUUID)
+        id2 (UUID/randomUUID)
+        comments [{:id id1
+                   :approved true}
+                  {:id id2
+                   :approved false}]
+        store (ms/store-mock {:exists? (constantly true)
+                              :get-resource (constantly (ct/js comments))})
+        comment-mng (ct/test-mng store)
+        handler (h/map->Handler {:comment-manager comment-mng})]
+    (is (= {:status 200
+            :body [{:id id1
+                     :approved true}]}
+           (h/comments-for-article handler
+                                   {:route-params {:article "foo"}}
+                                   false)))
+    (assert/called-with? (:exists? (protocol/spies store))
+                         store
+                         "foo.json")
+    (assert/called-with? (:get-resource (protocol/spies store))
+                         store
+                         "foo.json")))
+
+(deftest comments-for-article-all-test
+  (let [id1 (UUID/randomUUID)
+        id2 (UUID/randomUUID)
+        comments [{:id id1
+                   :approved true}
+                  {:id id2
+                   :approved false}]
+        store (ms/store-mock {:exists? (constantly true)
+                              :get-resource (constantly (ct/js comments))})
+        comment-mng (ct/test-mng store)
+        handler (h/map->Handler {:comment-manager comment-mng})]
+    (is (= {:status 200
+            :body comments}
+           (h/comments-for-article handler
+                                   {:route-params {:article "foo"}}
+                                   true)))
+    (assert/called-with? (:exists? (protocol/spies store))
+                         store
+                         "foo.json")
+    (assert/called-with? (:get-resource (protocol/spies store))
+                         store
+                         "foo.json")))
+
+(deftest delete-comment-test
+  (let [id (UUID/randomUUID)
+        events [{:id id
+                 :approved false}
+                {:id (UUID/randomUUID)
+                 :approved false}]
+        store (ms/store-mock {:exists? (constantly true)
+                              :get-resource (constantly (ct/js events))
+                              :save-resource (constantly true)})
+        comment-mng (ct/test-mng store)
+        handler (h/map->Handler {:comment-manager comment-mng})]
+    (is (= {:status 200 :body {:message "Comment deleted"}}
+         (h/delete-comment handler {:route-params {:article "foo"
+                                                     :comment-id id}})))
+    (assert/called-with? (:exists? (protocol/spies store))
+                         store
+                         "foo.json")
+    (assert/called-with? (:save-resource (protocol/spies store))
+                         store
+                         "foo.json"
+                         (json/generate-string [(last events)]))))
+
+(deftest delete-article-comments-test
+  (let [store (ms/store-mock {:exists? (constantly true)
+                              :delete-resource (constantly true)})
+        comment-mng (ct/test-mng store)
+        handler (h/map->Handler {:comment-manager comment-mng})]
+    (is (= {:status 200 :body {:message "Comments deleted"}}
+            (h/delete-article-comments handler {:route-params {:article "foo"}})))
+    (assert/called-with? (:exists? (protocol/spies store))
+                         store
+                         "foo.json")
+    (assert/called-with? (:delete-resource (protocol/spies store))
+                         store
+                         "foo.json")))
+
+(deftest approve-comment-test
+  (let [id (UUID/randomUUID)
+        store (ms/store-mock {:exists? (constantly true)
+                              :save-resource (constantly true)
+                              :get-resource (constantly (ct/js [{:id id
+                                                                 :approved false}]))})
+        comment-mng (ct/test-mng store)
+        handler (h/map->Handler {:comment-manager comment-mng})]
+    (is (= {:status 200 :body {:message "Comment approved"}}
+           (h/approve-comment handler {:route-params {:article "foo"
+                                                      :comment-id id}})))
+    (assert/called-with? (:exists? (protocol/spies store))
+                         store
+                         "foo.json")
+    (assert/called-with? (:save-resource (protocol/spies store))
+                         store
+                         "foo.json"
+                         (json/generate-string [{:id id :approved true}]))))
+
+(deftest healthz-test
+  (let [handler (h/map->Handler {})]
+    (is (= {:status 200
+            :body {:message "ok"}}
+           (h/healthz handler {})))))
+
+(deftest not-found-test
+  (let [handler (h/map->Handler {})]
+    (is (= {:status 404
+            :body {:error "not found"}}
+           (h/not-found handler {})))))
