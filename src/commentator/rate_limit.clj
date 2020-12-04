@@ -23,4 +23,5 @@
       (if (c/has? ttl-cache ip)
         (throw (ex/ex-forbidden "You are rate limited, please wait"
                                 {}))
-        (c/miss ttl-cache ip true)))))
+        (do (c/miss ttl-cache ip true)
+            true)))))
