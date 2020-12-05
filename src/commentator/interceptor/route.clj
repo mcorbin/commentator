@@ -1,8 +1,7 @@
 (ns commentator.interceptor.route
   (:require [bidi.bidi :as bidi]
             [exoscale.ex :as ex]
-            [commentator.handler :as handler]
-            [commentator.log :as log]))
+            [commentator.handler :as handler]))
 
 (def admin-calls #{:comment/get :comment/approve :comment/delete-article
                    :comment/delete :comment/admin-for-article :event/list
