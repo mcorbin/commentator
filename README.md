@@ -11,7 +11,7 @@ Commentator is a new project but already has some cool features, and I already u
 - [x] Comments approval.
 - [x] Rate limiting.
 - [x] In memory cache for comments (only invalidated when a change occurs) to avoid having to hit S3 too much and to improve performances.
-- [x] A "challenge" system to avoid spamming.
+- [x] A "challenge" system to avoid spams.
 
 ## How it works
 
