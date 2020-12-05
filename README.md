@@ -4,7 +4,7 @@ A commenting system for your blog. Comments are stored on any S3-compatible stor
 
 ## Features
 
-Commentator is a new project but already has some cool features, and I already use it for my personal blog:
+Commentator is a new project (it may have bugs) but already has some cool features, and I already use it for my personal blog:
 
 - [x] Everytime a comment is added, an event is published in a file also stored on S3
 - [x] An easy-to-use API to manage comments and events. Some API calls (to manage comments and events) are restricted to admin.
