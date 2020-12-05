@@ -19,6 +19,8 @@ Comments are stored on S3. Commentator manages a file stored on S3 per article. 
 
 A file named `events.json` is also managed by Commentator. Everytime a comment is added by an user, a new event is added in this file.
 
+![Commentator architecture](doc/commentator_schema.jpg?raw=true)
+
 Commentator exposes an API to manage comments (add, list, approve, or delete them) and events (list and delete them).
 
 ### Why store things on S3
