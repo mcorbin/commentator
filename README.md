@@ -113,7 +113,7 @@ You have 2 solutions.
 ### Run the jar
 
 - Download (or build using `lein uberjar`) the Commentator jar file provided in `Releases` on Github. I develop and test things on Java 11.
-- Set the `COMMENTATOR_CONFIGURATION` to the path of your Commentator configuration file.
+- Set the `COMMENTATOR_CONFIGURATION` env var to the path of your Commentator configuration file.
 - `java -jar commentator.jar`
 
 A systemd unit file with some defaults is provided in `doc/commentator.service`.
