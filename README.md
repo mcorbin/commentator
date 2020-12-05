@@ -28,19 +28,6 @@ Commentator exposes an API to manage comments (add, list, approve, or delete the
 Almost all languages can interact with S3. There is also tons of tooling and CLI (s3cmd, minio...) to manage resources on S3.
 By storing comments and events as json on files stored on S3, Commentator allows you to write your own tooling to manage them (even if the Commentator API may me enough for a lot of users).
 
-Here is what an event looks like:
-
-```clojure
-{
-  "timestamp": 1604943888444,
-  "id": "f5af61f2-2675-45f6-827b-4ea9f8470cca",
-  "article": "foo",
-  "message": "New comment 4e21a377-00a1-47f0-b5a1-b57b1262921a on article foo",
-  "comment-id": "4e21a377-00a1-47f0-b5a1-b57b1262921a",
-  "type": "new-comment"
-}
-```
-
 ## Comments approval
 
 As explained before, comments should be approved before being visible. You can also configure Cabourotte to approve all comments by default.
@@ -179,10 +166,10 @@ This API is restricted. You should pass to the `Authorization` header the token 
 
 ### List events
 
+```
 curl -H "Authorization: OIOzkfiZzrzrIIejj" \
 http://localhost:8787/api/admin/event
 
-```
 [
   {
     "timestamp": 1607185788030,
