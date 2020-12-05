@@ -92,7 +92,7 @@ I will work in the future on a better challenge system, where challenges cannot 
            :console true
            :overrides {:org.eclipse.jetty "info"
                        :org.apache.http "error"}}
- ;; your challengex
+ ;; your challenges
  :challenges {:c1 {:question "1 + 4 = ?"
                    :answer "5"}
               :c2 {:question "1 + 9 = ?"
