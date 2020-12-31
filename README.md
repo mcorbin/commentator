@@ -1,6 +1,7 @@
 # Commentator
 
 A commenting system for your blog. Comments are stored on any S3-compatible store.
+Project announcement (in french): https://mcorbin.fr/posts/2020-11-11-commentator/
 
 ## Features
 
