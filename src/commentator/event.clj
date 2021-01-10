@@ -60,17 +60,19 @@
               filtered (remove #(= (:id %) event-id) events)]
           (when (= (count events)
                    (count filtered))
-            (throw (ex/ex-not-found (format "Event %s not found"
-                                            event-id)
-                                    {:event-id event-id})))
+            (throw (ex/ex-info (format "Event %s not found"
+                                       event-id)
+                               [::not-found [:corbi/user ::ex/not-found]]
+                               {:event-id event-id})))
           (store/save-resource s3
                                event-file-name
                                (json/generate-string filtered))
           (log/info {:event-id event-id}
                     (format "Event %s deleted" event-id)))
-        (throw (ex/ex-not-found (format "Event %s not found"
-                                        event-id)
-                                {:event-id event-id})))))
+        (throw (ex/ex-info (format "Event %s not found"
+                                   event-id)
+                           [::not-found [:corbi/user ::ex/not-found]]
+                           {:event-id event-id})))))
   component/Lifecycle
   (start [this]
     (assoc this :lock (Object.)))

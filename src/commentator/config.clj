@@ -40,4 +40,6 @@
   (let [config (aero/read-config (env/env :commentator-configuration) {})]
     (if (s/valid? ::config config)
       config
-      (throw (ex/ex-incorrect "Invalid configuration" {})))))
+      (throw (ex/ex-info
+              [::invalid [:corbi/user ::ex/incorrect]]
+              "Invalid configuration")))))

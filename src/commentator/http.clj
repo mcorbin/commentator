@@ -13,17 +13,17 @@
 (defn interceptor-chain
   [token api-handler]
   [itc-response/response ;;leave
-         itc-cors/cors ;; leave
-         itc-json/json ;; leave
-         itc-error/error ;; error
-         itc-id/request-id ;;enter
-         itc-ring/cookies ;; enter + leave
-         itc-ring/params ;; enter
-         itc-ring/keyword-params ;; enter
-         itc-json/request-params ;; enter
-         itc-route/match-route ;; enter
-         (itc-auth/auth token) ;; enter
-         (itc-route/route api-handler) ;; enter
+   itc-cors/cors ;; leave
+   itc-json/json ;; leave
+   itc-error/error ;; error
+   itc-id/request-id ;;enter
+   itc-ring/cookies ;; enter + leave
+   itc-ring/params ;; enter
+   itc-ring/keyword-params ;; enter
+   itc-json/request-params ;; enter
+   itc-route/match-route ;; enter
+   (itc-auth/auth token) ;; enter
+   (itc-route/route api-handler) ;; enter
    ])
 
 (defn execute!

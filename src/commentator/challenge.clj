@@ -7,7 +7,9 @@
   (when-not (and (get-in challenges [challenge-name :answer])
              (= (string/lower-case answer)
                 (string/lower-case (get-in challenges [challenge-name :answer]))))
-    (throw (ex/ex-incorrect "Bad challenge response" {})))
+    (throw (ex/ex-info "Bad challenge response"
+                       [::bad-challenge [:corbi/user ::ex/incorrect]]
+                       {})))
   true)
 
 (defn random

@@ -58,7 +58,8 @@
 (defn allowed?
   [allowed-articles article]
   (when-not (allowed-articles article)
-    (throw (ex/ex-incorrect (format "Invalid article %s" article) {})))
+    (throw (ex/ex-info (format "Invalid article %s" article)
+                       [::invalid [:corbi/user ::ex/incorrect]])))
   true)
 
 (defrecord CommentManager [auto-approve allowed-articles s3 lock cache]
@@ -129,22 +130,24 @@
                            {:found false
                             :comments []}))]
           (when-not found
-            (throw (ex/ex-not-found (format "Comment %s not found for article %s"
-                                            comment-id
-                                            article)
-                                    {:article article
-                                     :comment-id comment-id})))
-            (store/save-resource s3
-                                 (article-file-name article)
-                                 (json/generate-string comments))
-            (c/evict cache article)
-            (log/info {:comment-id comment-id
-                       :article article}
-                      (format "Comment %s for article %s approved" comment-id article)))
-        (throw (ex/ex-not-found (format "No comment for article %s"
-                                        article)
-                                {:article article
-                                 :comment-id comment-id})))))
+            (throw (ex/ex-info (format "Comment %s not found for article %s"
+                                       comment-id
+                                       article)
+                               [::not-found [:corbi/user ::ex/not-found]]
+                               {:article article
+                                :comment-id comment-id})))
+          (store/save-resource s3
+                               (article-file-name article)
+                               (json/generate-string comments))
+          (c/evict cache article)
+          (log/info {:comment-id comment-id
+                     :article article}
+                    (format "Comment %s for article %s approved" comment-id article)))
+        (throw (ex/ex-info (format "No comment for article %s"
+                                   article)
+                           [::not-found [:corbi/user ::ex/not-found]]
+                           {:article article
+                            :comment-id comment-id})))))
 
   (delete-comment [this article comment-id]
     (locking lock
@@ -153,11 +156,12 @@
               filtered (remove #(= (:id %) comment-id) comments)]
           (when (= (count comments)
                    (count filtered))
-            (throw (ex/ex-not-found (format "Comment %s not found for article %s"
-                                            comment-id
-                                            article)
-                                    {:comment-id comment-id
-                                     :article article})))
+            (throw (ex/ex-info (format "Comment %s not found for article %s"
+                                       comment-id
+                                       article)
+                               [::not-found [:corbi/user ::ex/not-found]]
+                               {:comment-id comment-id
+                                :article article})))
           (store/save-resource s3
                                (article-file-name article)
                                (json/generate-string filtered))
@@ -165,10 +169,11 @@
           (log/info {:comment-id comment-id
                      :article article}
                     (format "Comment %s for article %s deleted" comment-id article)))
-        (throw (ex/ex-not-found (format "No comment for article %s"
-                                        article)
-                                {:article article
-                                 :comment-id comment-id})))))
+        (throw (ex/ex-info (format "No comment for article %s"
+                                   article)
+                           [::not-found [:corbi/user ::ex/not-found]]
+                           {:article article
+                            :comment-id comment-id})))))
 
   (get-comment [this article comment-id]
     (if (article-exists? this article)
@@ -176,15 +181,17 @@
                             (filter #(= (:id %) comment-id))
                             first)]
         comment
-        (throw (ex/ex-not-found (format "Comment %s not found for article %s"
-                                        comment-id
-                                        article)
-                                {:article article
-                                 :comment-id comment-id})))
-      (throw (ex/ex-not-found (format "No comment for article %s"
-                                      article)
-                              {:article article
-                               :comment-id comment-id}))))
+        (throw (ex/ex-info (format "Comment %s not found for article %s"
+                                   comment-id
+                                   article)
+                           [::not-found [:corbi/user ::ex/not-found]]
+                           {:article article
+                            :comment-id comment-id})))
+      (throw (ex/ex-info (format "No comment for article %s"
+                                 article)
+                         [::not-found [:corbi/user ::ex/not-found]]
+                         {:article article
+                          :comment-id comment-id}))))
   component/Lifecycle
   (start [this]
     (assoc this :lock (Object.) :cache (c/ttl-cache-factory {} :ttl cache-ttl)))

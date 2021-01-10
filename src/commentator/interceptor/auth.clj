@@ -17,6 +17,7 @@
                   request-token (get-auth-token request)]
               (when (and admin?
                          (not= (cloak/unmask token) request-token))
-                (throw (ex/ex-info "Forbidden" [:corbi/user [::ex/forbidden]] {})))
+                (throw (ex/ex-info "Forbidden"
+                                   [::forbidden [:corbi/user ::ex/forbidden]])))
               ctx))})
 
