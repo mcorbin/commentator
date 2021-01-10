@@ -9,9 +9,11 @@
            :allowed-articles ["foo"
                               "bar"]}
  :logging {:level "info"
-           :console true
+           :console {:encoder "json"}
            :overrides {:org.eclipse.jetty "info"
                        :org.apache.http "error"}}
+ :prometheus {:host "127.0.0.1"
+              :port 8788}
  :challenges {:c1 {:question "1 + 4 = ?"
                    :answer "5"}
               :c2 {:question "1 + 9 = ?"

@@ -1,14 +1,24 @@
 (ns commentator.config
-  (:require [clojure.spec.alpha :as s]
-            [aero.core :as aero]
+  (:require [aero.core :as aero]
+            [clojure.java.io :as io]
+            [clojure.spec.alpha :as s]
             [commentator.spec :as spec]
             [environ.core :as env]
             [exoscale.cloak :as cloak]
             [exoscale.ex :as ex]))
 
+(s/def ::file (fn [path]
+                (let [file (io/file path)]
+                  (and (.exists file)
+                       (.isFile file)))))
+
 (s/def ::host ::spec/non-empty-string)
 (s/def ::port pos-int?)
-(s/def ::http (s/keys :req-un [::host ::port]))
+(s/def ::key ::file)
+(s/def ::cert ::file)
+(s/def ::cacert ::file)
+(s/def ::http (s/keys :req-un [::host ::port]
+                      :opt-un [::key ::cert ::cacert]))
 
 (s/def ::token ::cloak/secret)
 (s/def ::admin (s/keys :req-un [::token]))
@@ -29,7 +39,10 @@
 (s/def ::challenge (s/keys :req-un [::question ::answer]))
 (s/def ::challenges (s/map-of ::spec/keyword ::challenge))
 
-(s/def ::config (s/keys :req-un [::http ::admin ::store ::challenges]))
+(s/def ::prometheus ::http)
+
+(s/def ::config (s/keys :req-un [::http ::admin ::store ::challenges]
+                        :opt-un [::prometheus]))
 
 (defmethod aero/reader 'secret
   [_ _ value]
@@ -41,5 +54,5 @@
     (if (s/valid? ::config config)
       config
       (throw (ex/ex-info
-              [::invalid [:corbi/user ::ex/incorrect]]
-              "Invalid configuration")))))
+              "Invalid configuration"
+              [::invalid [:corbi/user ::ex/incorrect]])))))
