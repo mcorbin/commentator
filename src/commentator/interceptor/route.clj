@@ -64,20 +64,13 @@
    (fn [{:keys [request] :as ctx}]
      (assoc ctx :response (route! request handler registry)))})
 
-(defn match-route
-  [registry]
+(def match-route
   {:name ::match-route
    :enter
    (fn [{:keys [request] :as ctx}]
      (let [uri (:uri request)
            request (bidi/match-route* routes uri request)]
        (when (= :system/not-found (:handler request))
-         (metric/increment! registry
-                            :http.responses.total
-                            {"status" "404"
-                             "method" (str (some-> (:request ctx)
-                                                   :request-method
-                                                   name))})
          (throw (ex/ex-info
                  "Not found"
                  [::not-found [:corbi/user ::ex/not-found]])))

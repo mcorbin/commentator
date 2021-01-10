@@ -20,7 +20,7 @@
    itc-json/json ;; leave
    itc-error/error ;; error
    itc-id/request-id ;;enter
-   (itc-route/match-route registry) ;; enter
+   itc-route/match-route ;; enter
    itc-json/request-params ;; enter
    itc-ring/cookies ;; enter + leave
    itc-ring/params ;; enter
