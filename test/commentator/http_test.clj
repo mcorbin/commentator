@@ -1,12 +1,15 @@
 (ns commentator.http-test
   (:require [clojure.test :refer :all]
             [commentator.http :as http]
+            [com.stuartsierra.component :as component]
             [exoscale.cloak :as cloak]))
 
 (deftest auth-admin-test
   (let [token "my-super-token"
-        handler (http/interceptor-handler (cloak/mask token) (fn [_]
-                                                               {:status 200}))
+        handler (component/start (http/map->ChainHandler
+                                  {:token (cloak/mask token)
+                                   :api-handler (fn [_]
+                                                  {:status 200})}))
         resp-403 {:status 403
                   :body "{\"error\":\"Forbidden\"}",
                   :headers

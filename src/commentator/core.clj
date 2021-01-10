@@ -5,9 +5,10 @@
             [commentator.event :as event]
             [commentator.handler :as handler]
             [commentator.http :as http]
-            [commentator.log :as log]
             [commentator.rate-limit :as rate-limit]
             [commentator.store :as store]
+            [corbihttp.http :as corbihttp]
+            [corbihttp.log :as log]
             [signal.handler :refer [with-handler]]
             [unilog.config :refer [start-logging!]])
   (:gen-class))
@@ -18,8 +19,7 @@
 (defn build-system
   [{:keys [http admin store comment challenges]}]
   (component/system-map
-   :http (-> (http/map->Server (merge http
-                                      admin))
+   :http (-> (corbihttp/map->Server {:config http})
              (component/using [:handler]))
    :s3 (store/map->S3 {:credentials (dissoc store :bucket)
                        :bucket (:bucket store)})
@@ -28,8 +28,10 @@
                       (component/using [:s3]))
    :comment-manager (-> (comment/map->CommentManager (update comment :allowed-articles set))
                         (component/using [:s3]))
-   :handler (-> (handler/map->Handler {:challenges challenges})
-                (component/using [:event-manager :comment-manager :rate-limiter]))))
+   :handler (-> (http/map->ChainHandler admin)
+                (component/using [:api-handler]))
+   :api-handler (-> (handler/map->Handler {:challenges challenges})
+                    (component/using [:event-manager :comment-manager :rate-limiter]))))
 
 (defn init-system
   "Initialize system, dropping the previous state."
@@ -71,6 +73,7 @@
     (log/info {} "the system is stopped")
     (System/exit 0))
   (try (start!)
+       (log/info {} "Mais y connaît pas Raoul ce mec ! Y va avoir un réveil pénible...")
        (log/info {} "system started")
        (catch Exception e
          (System/exit 1))))

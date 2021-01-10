@@ -4,7 +4,7 @@
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [com.stuartsierra.component :as component]
-            [commentator.log :as log]
+            [corbihttp.log :as log]
             [commentator.spec :as spec]
             [commentator.store :as store]
             [exoscale.coax :as coax]

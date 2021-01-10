@@ -1,20 +1,18 @@
 (ns commentator.http
-  (:require [com.stuartsierra.component :as component]
-            [commentator.interceptor.auth :as itc-auth]
+  (:require [commentator.interceptor.auth :as itc-auth]
             [commentator.interceptor.cors :as itc-cors]
-            [commentator.interceptor.error :as itc-error]
-            [commentator.interceptor.id :as itc-id]
-            [commentator.interceptor.json :as itc-json]
-            [commentator.interceptor.ring :as itc-ring]
-            [commentator.interceptor.response :as itc-response]
             [commentator.interceptor.route :as itc-route]
-            [exoscale.interceptor :as interceptor]
-            [ring.adapter.jetty :as jetty]))
+            [com.stuartsierra.component :as component]
+            [corbihttp.interceptor.error :as itc-error]
+            [corbihttp.interceptor.id :as itc-id]
+            [corbihttp.interceptor.json :as itc-json]
+            [corbihttp.interceptor.ring :as itc-ring]
+            [corbihttp.interceptor.response :as itc-response]
+            [exoscale.interceptor :as interceptor]))
 
-(defn interceptor-handler
-  [token handler]
-  (let [interceptors
-        [itc-response/response ;;leave
+(defn interceptor-chain
+  [token api-handler]
+  [itc-response/response ;;leave
          itc-cors/cors ;; leave
          itc-json/json ;; leave
          itc-error/error ;; error
@@ -25,20 +23,19 @@
          itc-json/request-params ;; enter
          itc-route/match-route ;; enter
          (itc-auth/auth token) ;; enter
-         (itc-route/route handler) ;; enter
-         ]]
-    (fn handler [request]
-      (interceptor/execute {:request request} interceptors))))
+         (itc-route/route api-handler) ;; enter
+   ])
 
-(defrecord Server [host port token handler server]
+(defn execute!
+  [request chain]
+  (interceptor/execute {:request request} chain))
+
+(defrecord ChainHandler [token api-handler itc-chain]
   component/Lifecycle
   (start [this]
-    (assoc this :server
-           (jetty/run-jetty (interceptor-handler token handler)
-                            {:join? false
-                             :host host
-                             :port port})))
+    (assoc this :itc-chain (interceptor-chain token api-handler)))
   (stop [this]
-    (when server
-      (.stop server))
-    (assoc this :server nil)))
+    (assoc this :it-chain nil))
+  clojure.lang.IFn
+  (invoke [this request] (execute! request itc-chain))
+  (applyTo [this args] (clojure.lang.AFn/applyToHelper this args)))

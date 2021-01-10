@@ -4,7 +4,6 @@
 
 (defn start!
   []
-  (refresh)
   (core/start!)
   "started")
 
@@ -16,6 +15,7 @@
 (defn restart!
   []
   (stop!)
+  (refresh)
   (start!))
 
 (defn challenge

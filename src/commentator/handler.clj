@@ -4,7 +4,7 @@
   (:require [commentator.event :as ce]
             [commentator.challenge :as challenge]
             [commentator.comment :as cc]
-            [commentator.log :as log]
+            [corbihttp.log :as log]
             [commentator.rate-limit :as rate-limit]
             [commentator.spec :as spec]
             [exoscale.coax :as coax]

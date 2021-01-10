@@ -2,7 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [cheshire.core :as json]
             [com.stuartsierra.component :as component]
-            [commentator.log :as log]
+            [corbihttp.log :as log]
             [commentator.store :as store]
             [exoscale.coax :as coax]
             [exoscale.ex :as ex])

@@ -33,6 +33,7 @@
 (defn route!
   [request handler]
   ;; double :handler because of bidi
+  (println "type " (type handler))
   (let [req-handler (:handler request)]
     (condp = req-handler
       :comment/new (handler/new-comment handler request)
