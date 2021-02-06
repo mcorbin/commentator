@@ -11,8 +11,8 @@
                  [com.amazonaws/aws-java-sdk-core "1.11.913"]
                  [com.amazonaws/aws-java-sdk-s3 "1.11.913"]
                  (exoscale/coax "1.0.0-alpha10")
-                 [mcorbin/corbihttp "0.9.0"]
-                 [org.clojure/clojure "1.10.1"]
+                 [mcorbin/corbihttp "0.10.0"]
+                 [org.clojure/clojure "1.10.2"]
                  [org.clojure/core.cache "1.0.207"]]
   :main ^:skip-aot commentator.core
   :target-path "target/%s"
