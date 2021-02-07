@@ -13,7 +13,8 @@
                  (exoscale/coax "1.0.0-alpha10")
                  [mcorbin/corbihttp "0.10.0"]
                  [org.clojure/clojure "1.10.2"]
-                 [org.clojure/core.cache "1.0.207"]]
+                 [org.clojure/core.cache "1.0.207"]
+                 [spootnik/signal "0.2.4"]]
   :main ^:skip-aot commentator.core
   :target-path "target/%s"
   :source-paths ["src"]
