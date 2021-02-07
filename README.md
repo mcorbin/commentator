@@ -14,6 +14,7 @@ Commentator is a new project (it may have bugs, and I plan to add new features a
 - [x] Rate limiting.
 - [x] In memory cache for comments (only invalidated when a change occurs) to avoid having to hit S3 too much and to improve performances.
 - [x] A "challenge" system to avoid spams.
+- [x] Metrics in Prometheus format
 
 ## How it works
 
@@ -61,7 +62,8 @@ I will work in the future on a better challenge system, where challenges cannot 
 
 
 ```clojure
-{;; http server configuration
+{;; http server configuration. You can also specify :key, :cert and :cacert for
+ ;; mTLS authentication
  :http {:host "127.0.0.1"
         :port 8787}
  ;; the token use for admin calls (basic auth, check the API examples)
@@ -78,9 +80,13 @@ I will work in the future on a better challenge system, where challenges cannot 
                               "bar"]}
  ;; logger configuration, supports everything described in https://github.com/pyr/unilog
  :logging {:level "info"
-           :console true
+           :console {:encoder "json"}
            :overrides {:org.eclipse.jetty "info"
                        :org.apache.http "error"}}
+;; Prometheus configuration (optional)
+ :prometheus {:host "127.0.0.1"
+              :port 8788}
+
  ;; your challenges
  :challenges {:c1 {:question "1 + 4 = ?"
                    :answer "5"}
