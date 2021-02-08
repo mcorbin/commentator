@@ -10,9 +10,8 @@ RUN lein uberjar
 FROM adoptopenjdk/openjdk11:alpine-jre
 
 RUN addgroup -S commentator && \
-    adduser -s /bin/false -G commentator -S commentator && \
-    apk add --update-cache git && \ 
-    rm -rf /var/cache/apk/*
+    adduser -s /bin/false -G commentator -S commentator
+    
 RUN mkdir /app
 COPY --from=build-env --chown=commentator:commentator /app/target/uberjar/commentator-*-standalone.jar /app/commentator.jar
 USER commentator
