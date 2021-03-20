@@ -14,7 +14,9 @@ RUN addgroup -S commentator && \
 
 RUN mkdir /app
 COPY --from=build-env --chown=commentator:commentator /app/target/uberjar/commentator-*-standalone.jar /app/commentator.jar
+ENV COMMENTATOR_CONFIGURATION=/app/config.edn
 USER commentator
 
-ENTRYPOINT ["java"]
-CMD ["-jar", "/app/commentator.jar"]
+ENTRYPOINT ["java", "-ea", "-XX:+AlwaysPreTouch", "-XX:MaxRAMPercentage=90", "-cp", "/app/commentator.jar"]
+
+CMD ["commentator.core"]
