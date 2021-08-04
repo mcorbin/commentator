@@ -1,23 +1,8 @@
 (ns commentator.interceptor.auth
-  (:require [commentator.interceptor.route :as route]
-            [exoscale.cloak :as cloak]
-            [exoscale.ex :as ex]))
-
-(defn get-auth-token
-  "Takes a request. Extracts the Authorization header."
-  [request]
-  (get-in request [:headers "authorization"]))
+  (:require [commentator.auth :as auth]))
 
 (defn auth
   [token]
   {:name ::auth
    :enter (fn [ctx]
-            (let [request (:request ctx)
-                  admin? (route/admin-calls (:handler request))
-                  request-token (get-auth-token request)]
-              (when (and admin?
-                         (not= (cloak/unmask token) request-token))
-                (throw (ex/ex-info "Forbidden"
-                                   [::forbidden [:corbi/user ::ex/forbidden]])))
-              ctx))})
-
+            (auth/auth-handler ctx token))})

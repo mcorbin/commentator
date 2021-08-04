@@ -4,7 +4,7 @@
  :store {:access-key #secret #env ACCESS_KEY
          :secret-key #secret #env SECRET_KEY
          :endpoint "https://sos-ch-gva-2.exo.io"
-         :bucket "mcorbin.fr.test.comment"}
+         :bucket "commentator-test"}
  :comment {:auto-approve false
            :allowed-articles ["foo"
                               "bar"]}
