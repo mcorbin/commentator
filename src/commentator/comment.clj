@@ -24,13 +24,6 @@
 (s/def ::comment (s/keys :req-un [::id ::content ::author ::timestamp ::approved]))
 (s/def ::comments (s/coll-of ::comment))
 
-(s/def ::new (s/keys :req-un [::article
-                              ::author
-                              ::content
-                              ::challenge
-                              ::answer]))
-
-
 (defprotocol ICommentManager
   (article-exists? [this article] "Checks if an article resource exists.")
   (for-article
