@@ -14,7 +14,8 @@
 (defprotocol IHandler
   (new-comment [this request] "Creates a new comment")
   (get-comment [this request] "Get a specific comment")
-  (comments-for-article [this request all?] "Get a comment for a specific article. all? to false will return only comments which are approved")
+  (comments-for-article [this request] "Get a comment for a specific article")
+  (admin-for-article [this request] "Get a comment for a specific article as admin (list all)")
   (delete-comment [this request] "Delete a comment")
   (delete-article-comments [this request] "Delete all comments for an article")
   (approve-comment [this request] "Approve a comment")
@@ -27,39 +28,29 @@
 
 (defn req->article
   [request]
-  (get-in request [:route-params :article]))
+  (get-in request [:all-params :article]))
 
 (defn req->comment-id
   [request]
-  (let [comment-id (->> (get-in request [:route-params :comment-id])
-                        (coax/coerce ::cc/id))]
-    (ex/assert-spec-valid ::cc/id comment-id)
-    comment-id))
+  (get-in request [:all-params :comment-id]))
 
 (defn req->event-id
   [request]
-  (let [comment-id (->> (get-in request [:route-params :event-id])
-                        (coax/coerce ::ce/id))]
-    (ex/assert-spec-valid ::ce/id comment-id)
-    comment-id))
+  (get-in request [:all-params :event-id]))
 
 (defrecord Handler [comment-manager event-manager rate-limiter challenges]
   IHandler
   (new-comment [this request]
     (let [article (req->article request)
-          body (:body request)
-          comment (coax/coerce
-                   ::cc/comment
-                   (-> (merge (select-keys body [:content :author])
-                              {:id (UUID/randomUUID)
-                               :approved false
-                               :timestamp (System/currentTimeMillis)})
-                       cc/sanitize))
-          challenge (coax/coerce ::spec/keyword (:challenge body))
-          answer (:answer body)]
+          params (:all-params request)
+          comment (-> (merge (select-keys params [:content :author])
+                             {:id (UUID/randomUUID)
+                              :approved false
+                              :timestamp (System/currentTimeMillis)})
+                      cc/sanitize)
+          challenge (:challenge params)
+          answer (:answer params)]
       (ex/assert-spec-valid ::cc/comment comment)
-      (ex/assert-spec-valid ::spec/keyword challenge)
-      (ex/assert-spec-valid ::spec/non-empty-string answer)
       (challenge/verify challenges challenge answer)
       (rate-limit/validate rate-limiter request)
       (cc/add-comment comment-manager article comment)
@@ -80,10 +71,15 @@
       {:status 200
        :body (cc/get-comment comment-manager article comment-id)}))
 
-  (comments-for-article [this request all?]
+  (comments-for-article [this request]
     (let [article (req->article request)]
       {:status 200
-       :body (cc/for-article comment-manager article all?)}))
+       :body (cc/for-article comment-manager article)}))
+
+  (admin-for-article [this request]
+    (let [article (req->article request)]
+      {:status 200
+       :body (cc/for-article comment-manager article true)}))
 
   (delete-comment [this request]
     (let [article (req->article request)

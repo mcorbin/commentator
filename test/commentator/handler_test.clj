@@ -13,25 +13,15 @@
   (:import java.util.UUID))
 
 (deftest req->article-test
-  (is (= "foo" (h/req->article {:route-params {:article "foo"}}))))
+  (is (= "foo" (h/req->article {:all-params {:article "foo"}}))))
 
 (deftest req->comment-id-test
   (let [id (UUID/randomUUID)]
-    (is (= id (h/req->comment-id {:route-params {:comment-id id}})))
-    (is (= id (h/req->comment-id {:route-params {:comment-id (str id)}}))))
-  (is (thrown-with-msg?
-       Exception
-       #"Invalid spec"
-       (h/req->comment-id {:route-params {:comment-id "a"}}))))
+    (is (= id (h/req->comment-id {:all-params {:comment-id id}})))))
 
 (deftest req->event-id-test
   (let [id (UUID/randomUUID)]
-    (is (= id (h/req->event-id {:route-params {:event-id id}})))
-    (is (= id (h/req->event-id {:route-params {:event-id (str id)}}))))
-  (is (thrown-with-msg?
-       Exception
-       #"Invalid spec"
-       (h/req->event-id {:route-params {:event-id "a"}}))))
+    (is (= id (h/req->event-id {:all-params {:event-id id}})))))
 
 (deftest new-comment-test
   (let [store (ms/store-mock {:exists? (constantly true)
@@ -39,19 +29,19 @@
                               :save-resource (constantly nil)})
         comment-mng (ct/test-mng store)
         event-mng (event/map->EventManager {:s3 store
-                                        :lock (Object.)})
+                                            :lock (Object.)})
         handler (h/map->Handler {:comment-manager comment-mng
                                  :event-manager event-mng
                                  :challenges {:c1 {:question "foo" :answer "bar"}}
                                  :rate-limiter (component/start (rl/map->SimpleRateLimiter {}))})]
-    (let [response (h/new-comment handler {:body {:content "content"
-                                                  :author "mcorbin"
-                                                  :challenge :c1
-                                                  :answer "bar"}
-                                           :route-params {:article "foo"}})]
-         (is (= {:status 201
-                 :body {:message "Comment added"}}
-                response)))
+    (let [response (h/new-comment handler {:all-params {:content "content"
+                                                        :author "mcorbin"
+                                                        :challenge :c1
+                                                        :answer "bar"
+                                                        :article "foo"}})]
+      (is (= {:status 201
+              :body {:message "Comment added"}}
+             response)))
     (Thread/sleep 100)
     (let [calls (spy/calls (:save-resource (protocol/spies store)))
           [p1 p2 p3] (first calls)
@@ -89,8 +79,8 @@
     (is (= {:status 200
             :body {:id id
                    :approved false}}
-           (h/get-comment handler {:route-params {:article "foo"
-                                                  :comment-id id}})))
+           (h/get-comment handler {:all-params {:article "foo"
+                                                :comment-id id}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
                          "foo.json")
@@ -111,10 +101,9 @@
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200
             :body [{:id id1
-                     :approved true}]}
+                    :approved true}]}
            (h/comments-for-article handler
-                                   {:route-params {:article "foo"}}
-                                   false)))
+                                   {:all-params {:article "foo"}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
                          "foo.json")
@@ -122,7 +111,7 @@
                          store
                          "foo.json")))
 
-(deftest comments-for-article-all-test
+(deftest admin-for-article-test
   (let [id1 (UUID/randomUUID)
         id2 (UUID/randomUUID)
         comments [{:id id1
@@ -135,9 +124,8 @@
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200
             :body comments}
-           (h/comments-for-article handler
-                                   {:route-params {:article "foo"}}
-                                   true)))
+           (h/admin-for-article handler
+                                {:all-params {:article "foo"}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
                          "foo.json")
@@ -157,8 +145,8 @@
         comment-mng (ct/test-mng store)
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200 :body {:message "Comment deleted"}}
-         (h/delete-comment handler {:route-params {:article "foo"
-                                                     :comment-id id}})))
+           (h/delete-comment handler {:all-params {:article "foo"
+                                                   :comment-id id}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
                          "foo.json")
@@ -173,7 +161,7 @@
         comment-mng (ct/test-mng store)
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200 :body {:message "Comments deleted"}}
-            (h/delete-article-comments handler {:route-params {:article "foo"}})))
+           (h/delete-article-comments handler {:all-params {:article "foo"}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
                          "foo.json")
@@ -190,8 +178,8 @@
         comment-mng (ct/test-mng store)
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200 :body {:message "Comment approved"}}
-           (h/approve-comment handler {:route-params {:article "foo"
-                                                      :comment-id id}})))
+           (h/approve-comment handler {:all-params {:article "foo"
+                                                    :comment-id id}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
                          "foo.json")

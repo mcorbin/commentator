@@ -4,7 +4,7 @@
             [commentator.config :as config]
             [commentator.event :as event]
             [commentator.handler :as handler]
-            [commentator.http :as http]
+            [commentator.chain :as chain]
             [commentator.rate-limit :as rate-limit]
             [commentator.store :as store]
             [corbihttp.http :as corbihttp]
@@ -19,12 +19,14 @@
 
 (defn build-system
   [{:keys [http admin store comment challenges prometheus]}]
-  (let [registry (metric/registry-component {})
-        prom-handler (metric/prom-handler registry)]
+  (let [registry (metric/registry-component {})]
     (component/system-map
      :registry registry
-     :http (-> (corbihttp/map->Server {:config http})
-               (component/using [:handler]))
+     :http (-> (corbihttp/map->Server (merge {:config http
+                                              :chain-builder chain/interceptor-chain
+                                              :registry registry}
+                                             admin))
+               (component/using [:api-handler]))
      :s3 (store/map->S3 {:credentials (dissoc store :bucket)
                          :bucket (:bucket store)})
      :rate-limiter (rate-limit/map->SimpleRateLimiter {})
@@ -34,10 +36,9 @@
                           (component/using [:s3]))
      :prometheus (if (and prometheus (not (empty? prometheus)))
                    (corbihttp/map->Server {:config prometheus
-                                           :handler prom-handler})
+                                           :registry registry
+                                           :chain-builder metric/prom-chain-builder})
                    {})
-     :handler (-> (http/map->ChainHandler admin)
-                  (component/using [:api-handler :registry]))
      :api-handler (-> (handler/map->Handler {:challenges challenges})
                       (component/using [:event-manager :comment-manager :rate-limiter])))))
 
