@@ -11,6 +11,8 @@
   [data]
   (json/generate-string data))
 
+(def website "mcorbin")
+
 (deftest list-events-test
   (testing "some events exist"
     (let [events [{:id (UUID/randomUUID)
@@ -23,11 +25,11 @@
                                 :exists? (constantly true)})
           mng (event/map->EventManager {:s3 store
                                         :lock (Object.)})]
-      (is (= events (event/list-events mng)))))
+      (is (= events (event/list-events mng website)))))
   (testing "No events"
     (let [store (ms/store-mock {:exists? (constantly false)})
           mng (event/map->EventManager {:s3 store})]
-      (is (= [] (event/list-events mng))))))
+      (is (= [] (event/list-events mng website))))))
 
 (deftest add-event-test
   (testing "some events exist"
@@ -45,9 +47,10 @@
                                 :exists? (constantly true)})
           mng (event/map->EventManager {:s3 store
                                         :lock (Object.)})]
-      (event/add-event mng event)
+      (event/add-event mng website event)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
+                           website
                            event/event-file-name
                            (json/generate-string (conj events event)))))
   (testing "No events"
@@ -58,9 +61,10 @@
                  :type :new-comment}
           mng (event/map->EventManager {:s3 store
                                         :lock (Object.)})]
-      (event/add-event mng event)
+      (event/add-event mng website event)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
+                           website
                            event/event-file-name
                            (json/generate-string [event])))))
 
@@ -78,9 +82,10 @@
                                 :exists? (constantly true)})
           mng (event/map->EventManager {:s3 store
                                         :lock (Object.)})]
-      (event/delete-event mng id)
+      (event/delete-event mng website id)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
+                           website
                            event/event-file-name
                            (json/generate-string [(second events)]))))
   (testing "No event"
@@ -91,7 +96,7 @@
       (is (thrown-with-msg?
            Exception
            #"not found"
-           (event/delete-event mng id)))))
+           (event/delete-event mng website id)))))
   (testing "Even does not exist"
     (let [id (UUID/randomUUID)
           events [{:id (UUID/randomUUID)
@@ -107,4 +112,4 @@
       (is (thrown-with-msg?
            Exception
            #"not found"
-           (event/delete-event mng id))))))
+           (event/delete-event mng website id))))))

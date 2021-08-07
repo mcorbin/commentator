@@ -5,13 +5,13 @@
 
 (defrecord StoreMock [exists? get-resource save-resource delete-resource]
   store/IStoreOperator
-  (exists? [this resource-name]
-    (exists? resource-name))
-  (get-resource [this resource-name]
-    (get-resource resource-name))
-  (save-resource [this resource-name content]
+  (exists? [this website resource-name]
+    (exists? website resource-name))
+  (get-resource [this website resource-name]
+    (get-resource website resource-name))
+  (save-resource [this website resource-name content]
     (save-resource resource-name content))
-  (delete-resource [this resource-name]
+  (delete-resource [this website resource-name]
     (delete-resource resource-name)))
 
 (defn store-mock

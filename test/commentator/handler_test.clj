@@ -12,6 +12,8 @@
             [spy.protocol :as protocol])
   (:import java.util.UUID))
 
+(def website "mcorbin")
+
 (deftest req->article-test
   (is (= "foo" (h/req->article {:all-params {:article "foo"}}))))
 
@@ -35,6 +37,7 @@
                                  :challenges {:c1 {:question "foo" :answer "bar"}}
                                  :rate-limiter (component/start (rl/map->SimpleRateLimiter {}))})]
     (let [response (h/new-comment handler {:all-params {:content "content"
+                                                        :website website
                                                         :author "mcorbin"
                                                         :challenge :c1
                                                         :answer "bar"
@@ -44,16 +47,18 @@
              response)))
     (Thread/sleep 100)
     (let [calls (spy/calls (:save-resource (protocol/spies store)))
-          [p1 p2 p3] (first calls)
-          [c1 :as comments] (json/parse-string p3 true)
-          [pe1 pe2 pe3] (second calls)
-          [e1 :as events] (json/parse-string pe3 true)]
+          [p1 p2 p3 p4] (first calls)
+          [c1 :as comments] (json/parse-string p4 true)
+          [pe1 pe2 pe3 pe4] (second calls)
+          [e1 :as events] (json/parse-string pe4 true)]
       ;; 1 event 1 comment
       (is (= 2 (count calls)))
       (is (= store p1))
       (is (= store pe1))
-      (is (= "foo.json" p2))
-      (is (= "events.json" pe2))
+      (is (= website p2))
+      (is (= website pe2))
+      (is (= "foo.json" p3))
+      (is (= "events.json" pe3))
       (is (= 1 (count comments)))
       (is (= 1 (count events)))
       (is (= {:content "content"
@@ -80,12 +85,15 @@
             :body {:id id
                    :approved false}}
            (h/get-comment handler {:all-params {:article "foo"
+                                                :website website
                                                 :comment-id id}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
+                         website
                          "foo.json")
     (assert/called-with? (:get-resource (protocol/spies store))
                          store
+                         website
                          "foo.json")))
 
 (deftest comments-for-article-test
@@ -103,12 +111,15 @@
             :body [{:id id1
                     :approved true}]}
            (h/comments-for-article handler
-                                   {:all-params {:article "foo"}})))
+                                   {:all-params {:article "foo"
+                                                 :website website}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
+                         website
                          "foo.json")
     (assert/called-with? (:get-resource (protocol/spies store))
                          store
+                         website
                          "foo.json")))
 
 (deftest admin-for-article-test
@@ -125,12 +136,15 @@
     (is (= {:status 200
             :body comments}
            (h/admin-for-article handler
-                                {:all-params {:article "foo"}})))
+                                {:all-params {:article "foo"
+                                              :website website}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
+                         website
                          "foo.json")
     (assert/called-with? (:get-resource (protocol/spies store))
                          store
+                         website
                          "foo.json")))
 
 (deftest delete-comment-test
@@ -146,12 +160,15 @@
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200 :body {:message "Comment deleted"}}
            (h/delete-comment handler {:all-params {:article "foo"
+                                                   :website website
                                                    :comment-id id}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
+                         website
                          "foo.json")
     (assert/called-with? (:save-resource (protocol/spies store))
                          store
+                         website
                          "foo.json"
                          (json/generate-string [(last events)]))))
 
@@ -161,12 +178,15 @@
         comment-mng (ct/test-mng store)
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200 :body {:message "Comments deleted"}}
-           (h/delete-article-comments handler {:all-params {:article "foo"}})))
+           (h/delete-article-comments handler {:all-params {:article "foo"
+                                                            :website website}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
+                         website
                          "foo.json")
     (assert/called-with? (:delete-resource (protocol/spies store))
                          store
+                         website
                          "foo.json")))
 
 (deftest approve-comment-test
@@ -179,12 +199,15 @@
         handler (h/map->Handler {:comment-manager comment-mng})]
     (is (= {:status 200 :body {:message "Comment approved"}}
            (h/approve-comment handler {:all-params {:article "foo"
+                                                    :website website
                                                     :comment-id id}})))
     (assert/called-with? (:exists? (protocol/spies store))
                          store
+                         website
                          "foo.json")
     (assert/called-with? (:save-resource (protocol/spies store))
                          store
+                         website
                          "foo.json"
                          (json/generate-string [{:id id :approved true}]))))
 

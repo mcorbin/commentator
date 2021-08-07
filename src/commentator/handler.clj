@@ -34,6 +34,10 @@
   [request]
   (get-in request [:all-params :comment-id]))
 
+(defn req->website
+  [request]
+  (get-in request [:all-params :website]))
+
 (defn req->event-id
   [request]
   (get-in request [:all-params :event-id]))
@@ -49,13 +53,16 @@
                               :timestamp (System/currentTimeMillis)})
                       cc/sanitize)
           challenge (:challenge params)
-          answer (:answer params)]
+          answer (:answer params)
+          website (:website params)]
       (ex/assert-spec-valid ::cc/comment comment)
       (challenge/verify challenges challenge answer)
       (rate-limit/validate rate-limiter request)
-      (cc/add-comment comment-manager article comment)
-      (future (try (ce/add-event event-manager (ce/new-comment article
-                                                               (:id comment)))
+      (cc/add-comment comment-manager website article comment)
+      (future (try (ce/add-event event-manager
+                                 website
+                                 (ce/new-comment article
+                                                 (:id comment)))
                    (catch Exception e
                      (log/error (log/req-ctx request)
                                 e
@@ -67,35 +74,41 @@
 
   (get-comment [this request]
     (let [article (req->article request)
-          comment-id (req->comment-id request)]
+          comment-id (req->comment-id request)
+          website (req->website request)]
       {:status 200
-       :body (cc/get-comment comment-manager article comment-id)}))
+       :body (cc/get-comment comment-manager website article comment-id)}))
 
   (comments-for-article [this request]
-    (let [article (req->article request)]
+    (let [article (req->article request)
+          website (req->website request)]
       {:status 200
-       :body (cc/for-article comment-manager article)}))
+       :body (cc/for-article comment-manager website article)}))
 
   (admin-for-article [this request]
-    (let [article (req->article request)]
+    (let [article (req->article request)
+          website (req->website request)]
       {:status 200
-       :body (cc/for-article comment-manager article true)}))
+       :body (cc/for-article comment-manager website article true)}))
 
   (delete-comment [this request]
     (let [article (req->article request)
-          comment-id (req->comment-id request)]
-      (cc/delete-comment comment-manager article comment-id)
+          comment-id (req->comment-id request)
+          website (req->website request)]
+      (cc/delete-comment comment-manager website article comment-id)
       {:status 200 :body {:message "Comment deleted"}}))
 
   (delete-article-comments [this request]
-    (let [article (req->article request)]
-      (cc/delete-article comment-manager article)
+    (let [article (req->article request)
+          website (req->website request)]
+      (cc/delete-article comment-manager website article)
       {:status 200 :body {:message "Comments deleted"}}))
 
   (approve-comment [this request]
     (let [article (req->article request)
-          comment-id (req->comment-id request)]
-      (cc/approve-comment comment-manager article comment-id)
+          comment-id (req->comment-id request)
+          website (req->website request)]
+      (cc/approve-comment comment-manager website article comment-id)
       {:status 200 :body {:message "Comment approved"}}))
 
   (random-challenge [this request]
@@ -105,12 +118,14 @@
               :question (get-in challenges [challenge :question])}}))
 
   (list-events [this request]
-    {:status 200
-     :body (ce/list-events event-manager)})
+    (let [website (req->website request)]
+      {:status 200
+       :body (ce/list-events website event-manager)}))
 
   (delete-event [this request]
-    (let [event-id (req->event-id request)]
-      (ce/delete-event event-manager event-id)
+    (let [event-id (req->event-id request)
+          website (req->website request)]
+      (ce/delete-event event-manager website event-id)
       {:status 200
        :body {:message "Event deleted"}}))
 

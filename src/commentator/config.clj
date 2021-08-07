@@ -19,6 +19,8 @@
 (s/def ::cacert ::file)
 (s/def ::http (s/keys :req-un [::host ::port]
                       :opt-un [::key ::cert ::cacert]))
+(s/def ::bucket-prefix (s/and ::spec/non-empty-string
+                              #(< (count %) 20)))
 
 (s/def ::token ::cloak/secret)
 (s/def ::admin (s/keys :req-un [::token]))
@@ -26,13 +28,18 @@
 (s/def ::access-key ::cloak/secret)
 (s/def ::secret-key ::cloak/secret)
 (s/def ::endpoint ::spec/non-empty-string)
-(s/def ::bucket ::spec/non-empty-string)
 
 (s/def ::auto-approve boolean?)
-(s/def ::allowed-articles (s/coll-of ::spec/non-empty-string))
-(s/def ::comment (s/keys :req-un [::auto-approve ::allowed-articles]))
 
-(s/def ::store (s/keys :req-un [::access-key ::secret-key ::endpoint ::bucket]))
+(s/def ::website (s/and ::spec/non-empty-string
+                        #(< (count %) 40)
+                        #(re-matches #"^[a-zA-Z0-9-_]+$" %)))
+(s/def ::allowed-articles (s/map-of ::website (s/coll-of ::spec/non-empty-string)))
+
+(s/def ::comment (s/keys :req-un [::auto-approve]
+                         :opt-un [::allowed-articles]))
+
+(s/def ::store (s/keys :req-un [::access-key ::secret-key ::endpoint ::bucket-prefix]))
 
 (s/def ::question ::spec/non-empty-string)
 (s/def ::answer ::spec/non-empty-string)
@@ -41,7 +48,7 @@
 
 (s/def ::prometheus ::http)
 
-(s/def ::config (s/keys :req-un [::http ::admin ::store ::challenges]
+(s/def ::config (s/keys :req-un [::http ::admin ::store ::challenges ::comment]
                         :opt-un [::prometheus]))
 
 (defmethod aero/reader 'secret

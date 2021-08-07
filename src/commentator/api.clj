@@ -1,6 +1,7 @@
 (ns commentator.api
   (:require [clojure.spec.alpha :as s]
             [commentator.comment :as comment]
+            [commentator.config :as config]
             [commentator.event :as event]
             [commentator.handler :as handler]
             [commentator.spec :as spec]))
@@ -9,57 +10,64 @@
 (s/def ::answer ::spec/non-empty-string)
 (s/def ::comment-id ::comment/id)
 (s/def ::article ::spec/non-empty-string)
+(s/def ::website ::config/website)
+
 (s/def :comment/new (s/keys :req-un [::article
                                      ::comment/author
                                      ::comment/content
                                      ::challenge
                                      ::answer]))
 (s/def :comment/get (s/keys :req-un [::article
-                                     ::comment-id]))
-(s/def :comment/for-article (s/keys :req-un [::article]))
-(s/def :comment/approve (s/keys :req-un [::article ::comment-id]))
-(s/def :comment/delete (s/keys :req-un [::article ::comment-id]))
-(s/def :comment/delete-article (s/keys :req-un [::article]))
-(s/def :comment/admin-for-article (s/keys :req-un [::article]))
+                                     ::website
+                                     ::comment-id
+                                     ::website]))
+(s/def :comment/for-article (s/keys :req-un [::article
+                                             ::website]))
+(s/def :comment/approve (s/keys :req-un [::article ::comment-id ::website]))
+(s/def :comment/delete (s/keys :req-un [::article ::comment-id ::website]))
+(s/def :comment/delete-article (s/keys :req-un [::article ::website]))
+(s/def :comment/admin-for-article (s/keys :req-un [::article ::website]))
 
-(s/def :event/delete (s/keys :req-un [::event/id]))
+(s/def :event/delete (s/keys :req-un [::event/id ::website]))
+(s/def :event/list (s/keys :req-un [::website]))
 
 (def dispatch-map
-  {:comment/new {:path ["api/v1/comment/" :article #"/?"]
+  {:comment/new {:path ["api/v1/comment/" :website "/":article #"/?"]
                  :handler-fn handler/new-comment
                  :spec :comment/new
                  :method :post}
-   :comment/get {:path ["api/admin/comment/" :article "/" :comment-id #"/?"]
+   :comment/get {:path ["api/admin/comment/":website "/" :article "/" :comment-id #"/?"]
                  :handler-fn handler/get-comment
                  :spec :comment/get
                  :method :get}
-   :comment/for-article {:path ["api/v1/comment/" :article #"/?"]
+   :comment/for-article {:path ["api/v1/comment/" :website "/" :article #"/?"]
                          :spec :comment/for-article
                          :method :get
                          :handler-fn handler/comments-for-article}
-   :comment/approve {:path ["api/admin/comment/" :article "/" :comment-id #"/?"]
+   :comment/approve {:path ["api/admin/comment/" :website "/" :article "/" :comment-id #"/?"]
                      :handler-fn handler/approve-comment
                      :spec :comment/approve
                      :method :post}
-   :comment/delete {:path ["api/admin/comment/" :article "/" :comment-id #"/?"]
+   :comment/delete {:path ["api/admin/comment/" :website "/" :article "/" :comment-id #"/?"]
                     :method :delete
                     :spec :comment/delete
                     :handler-fn handler/delete-comment}
-   :comment/delete-article {:path ["api/admin/comment/" :article #"/?"]
+   :comment/delete-article {:path ["api/admin/comment/" :website "/" :article #"/?"]
                             :handler-fn handler/delete-article-comments
                             :spec :comment/delete-article
                             :method :delete}
-   :comment/admin-for-article {:path ["api/admin/comment/" :article #"/?"]
-                               :handler-fn handler/comments-for-article
+   :comment/admin-for-article {:path ["api/admin/comment/" :website "/" :article #"/?"]
+                               :handler-fn handler/admin-for-article
                                :spec :comment/admin-for-article
                                :method :get}
    :challenge/random {:path [#"api/v1/challenge/?"]
                       :handler-fn handler/random-challenge
                       :method :get}
-   :event/list {:path [#"api/admin/event/?"]
+   :event/list {:path [#"api/admin/event/" :website #"/?"]
                 :method :get
+                :spec :event/list
                 :handler-fn handler/list-events}
-   :event/delete {:path ["api/admin/event/" :event-id]
+   :event/delete {:path ["api/admin/event/" :website "/" :event-id #"/?"]
                   :spec :event/delete
                   :method :delete
                   :handler-fn handler/delete-event}

@@ -29,30 +29,30 @@
                   :headers
                   {"content-type" "application/json", "Access-Control-Allow-Origin" "*"}}]
     (is (= resp-403
-           (handler {:uri "/api/admin/comment/foo"
+           (handler {:uri "/api/admin/comment/mcorbin/foo"
                      :request-method :get
                      :headers {"authorization" "invalid-token"}})))
     (is (= resp-403
-           (handler {:uri "/api/admin/comment/foo/aaa"
+           (handler {:uri "/api/admin/comment/mcorbin/foo/aaa"
                      :request-method :get
                      :headers {"authorization" "invalid-token"}})))
     (is (= resp-403
-           (handler {:uri "/api/admin/comment/foo/aaa"
+           (handler {:uri "/api/admin/comment/mcorbin/foo/aaa"
                      :request-method :post
                      :headers {"authorization" "invalid-token"}})))
     (is (= resp-403
-           (handler {:uri "/api/admin/comment/foo"
+           (handler {:uri "/api/admin/comment/mcorbin/foo"
                      :request-method :delete
                      :headers {"authorization" "invalid-token"}})))
     (is (= resp-403
-           (handler {:uri "/api/admin/comment/foo/aaa"
+           (handler {:uri "/api/admin/comment/mcorbin/foo/aaa"
                      :request-method :delete
                      :headers {"authorization" "invalid-token"}})))
     (is (= resp-403
-           (handler {:uri "/api/admin/event/"
+           (handler {:uri "/api/admin/event/mcorbin"
                      :request-method :get
                      :headers {"authorization" "invalid-token"}})))
     (is (= resp-403
-           (handler {:uri "/api/admin/event/foo"
+           (handler {:uri "/api/admin/event/mcorbin/foo"
                      :request-method :delete
                      :headers {"authorization" "invalid-token"}})))))

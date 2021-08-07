@@ -1,5 +1,6 @@
 (ns commentator.core
   (:require [com.stuartsierra.component :as component]
+            [commentator.cache :as c]
             [commentator.comment :as comment]
             [commentator.config :as config]
             [commentator.event :as event]
@@ -17,6 +18,17 @@
 (defonce ^:redef system
   nil)
 
+(defn allowed-articles-set
+  [comment-config]
+  (if (:allowed-articles comment-config)
+    (update comment-config
+            :allowed-articles
+            #(when %
+               (into {}
+                     (for [[k v] %]
+                       [(name k) (set v)]))))
+    comment-config))
+
 (defn build-system
   [{:keys [http admin store comment challenges prometheus]}]
   (let [registry (metric/registry-component {})]
@@ -28,17 +40,19 @@
                                              admin))
                (component/using [:api-handler]))
      :s3 (store/map->S3 {:credentials (dissoc store :bucket)
-                         :bucket (:bucket store)})
+                         :bucket-prefix (:bucket-prefix store)})
      :rate-limiter (rate-limit/map->SimpleRateLimiter {})
      :event-manager (-> (event/map->EventManager {})
                         (component/using [:s3]))
-     :comment-manager (-> (comment/map->CommentManager (update comment :allowed-articles set))
-                          (component/using [:s3]))
-     :prometheus (if (and prometheus (not (empty? prometheus)))
+     :comment-manager (-> (comment/map->CommentManager (allowed-articles-set
+                                                        comment))
+                          (component/using [:s3 :cache]))
+     :prometheus (if (and prometheus (seq prometheus))
                    (corbihttp/map->Server {:config prometheus
                                            :registry registry
                                            :chain-builder metric/prom-chain-builder})
                    {})
+     :cache (c/map->MemoryCache {})
      :api-handler (-> (handler/map->Handler {:challenges challenges})
                       (component/using [:event-manager :comment-manager :rate-limiter])))))
 

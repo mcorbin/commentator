@@ -3,11 +3,11 @@
  :admin {:token #secret "my-super-token"}
  :store {:access-key #secret #env ACCESS_KEY
          :secret-key #secret #env SECRET_KEY
-         :endpoint "https://sos-ch-gva-2.exo.io"
-         :bucket "commentator-test"}
+         :bucket-prefix "commentator-dev-"
+         :endpoint "https://sos-ch-gva-2.exo.io"}
  :comment {:auto-approve false
-           :allowed-articles ["foo"
-                              "bar"]}
+           :allowed-articles {"mcorbin-fr" ["foo"
+                                            "bar"]}}
  :logging {:level "info"
            :console {:encoder "json"}
            :overrides {:org.eclipse.jetty "info"
