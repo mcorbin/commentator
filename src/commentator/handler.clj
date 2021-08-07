@@ -6,8 +6,6 @@
             [commentator.comment :as cc]
             [corbihttp.log :as log]
             [commentator.rate-limit :as rate-limit]
-            [commentator.spec :as spec]
-            [exoscale.coax :as coax]
             [exoscale.ex :as ex])
   (:import java.util.UUID))
 
