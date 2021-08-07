@@ -1,10 +1,10 @@
 (ns commentator.comment
   (:require [cheshire.core :as json]
-            [clojure.core.cache.wrapped :as c]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
             [com.stuartsierra.component :as component]
             [corbihttp.log :as log]
+            [commentator.cache :as c]
             [commentator.spec :as spec]
             [commentator.store :as store]
             [exoscale.coax :as coax]
@@ -25,16 +25,16 @@
 (s/def ::comments (s/coll-of ::comment))
 
 (defprotocol ICommentManager
-  (article-exists? [this article] "Checks if an article resource exists.")
+  (article-exists? [this website article] "Checks if an article resource exists.")
   (for-article
-    [this article]
-    [this article all?]
+    [this website article]
+    [this website article all?]
     "Returns all comments for an article. The all? parameter can be set to true in order to return all comments, approved or not")
-  (delete-article [this article] "Delete all comments for an article")
-  (approve-comment [this article comment-id] "Approve a comment for an article")
-  (add-comment [this article comment] "Add a comment for an article")
-  (delete-comment [this article comment-id] "Delete a comment for an article")
-  (get-comment [this article comment-id] "Get a comment by ID for an article"))
+  (delete-article [this website article] "Delete all comments for an article")
+  (approve-comment [this website article comment-id] "Approve a comment for an article")
+  (add-comment [this website article comment] "Add a comment for an article")
+  (delete-comment [this website article comment-id] "Delete a comment for an article")
+  (get-comment [this website article comment-id] "Get a comment by ID for an article"))
 
 (defn escape-html
   "Change special characters into HTML character entities."
@@ -56,72 +56,82 @@
   (str article ".json"))
 
 (defn allowed?
-  [allowed-articles article]
-  (when-not (allowed-articles article)
-    (throw (ex/ex-info (format "Invalid article %s" article)
-                       [::invalid [:corbi/user ::ex/incorrect]])))
-  true)
+  [allowed-articles website article]
+  (if-not allowed-articles
+    ;; allowed-articles is optional
+    true
+    (let [articles (get allowed-articles website)]
+      (if-not (and articles (articles article))
+        (throw (ex/ex-info (format "Invalid article %s" article)
+                           [::invalid [:corbi/user ::ex/incorrect]]))
+        true))))
 
 (defrecord CommentManager [auto-approve allowed-articles s3 lock cache]
   ICommentManager
-  (article-exists? [this article]
-    (store/exists? s3 (article-file-name article)))
+  (article-exists? [this website article]
+    (store/exists? s3 website (article-file-name article)))
 
-  (for-article [this article]
-    (allowed? allowed-articles article)
-    (for-article this article false))
+  (for-article [this website article]
+    (for-article this website article false))
 
-  (for-article [this article all?]
-    (allowed? allowed-articles article)
-    (if (article-exists? this article)
+  (for-article [this website article all?]
+    (allowed? allowed-articles website article)
+    (if (article-exists? this website article)
       (let [{:keys [comments from-cache]}
-            (if-let [cache-comments (c/lookup cache article)]
+            (if-let [cache-comments (c/lookup cache website article)]
               {:comments cache-comments :from-cache true}
               {:comments
                (coax/coerce
                 ::comments
-                (-> (store/get-resource s3 (article-file-name article))
+                (-> (store/get-resource s3 website (article-file-name article))
                     (json/parse-string true)))
                :from-cache false})]
         (when-not from-cache
           ;; update the cache if the value was retrieved from s3
-          (c/miss cache article comments))
+          (c/miss cache website article comments))
         (if all?
           (vec comments)
           (vec (filter :approved comments))))
       []))
 
-  (delete-article [this article]
+  (delete-article [this website article]
     (locking lock
-      (when (article-exists? this article)
-        (c/evict cache article)
-        (store/delete-resource s3 (article-file-name article)))))
+      (when (article-exists? this website article)
+        (c/evict cache website article)
+        (store/delete-resource s3 website (article-file-name article)))))
 
-  (add-comment [this article comment]
-    (allowed? allowed-articles article)
+  (add-comment [this website article comment]
+    (allowed? allowed-articles website article)
     (locking lock
-      (if (article-exists? this article)
-        (let [comments (for-article this article true)]
+      (if (article-exists? this website article)
+        (let [comments (for-article this website article true)]
+          (log/infof  {}
+                      "Adding comment %s for %s/%s"
+                      (:id comment)
+                      website
+                      article)
           (store/save-resource s3
+                               website
                                (article-file-name article)
                                (-> (conj comments
                                          (assoc comment :approved auto-approve))
                                    json/generate-string)))
         ;; first comment for this article
         (store/save-resource s3
+                             website
                              (article-file-name article)
                              (-> [comment]
                                  json/generate-string)))
-      (c/evict cache article))
+      (c/evict cache website article))
     (log/info {:comment-id (:id comment)
                :article article}
               (format "New comment %s for article %s" (:id comment) article)))
 
-  (approve-comment [this article comment-id]
+  (approve-comment [this website article comment-id]
     (locking lock
-      (if (article-exists? this article)
+      (if (article-exists? this website article)
         (let [{:keys [found comments]}
-              (->> (for-article this article true)
+              (->> (for-article this website article true)
                    (reduce (fn [state comment]
                              (if (= (:id comment) comment-id)
                                (-> (assoc state :found true)
@@ -137,9 +147,10 @@
                                {:article article
                                 :comment-id comment-id})))
           (store/save-resource s3
+                               website
                                (article-file-name article)
                                (json/generate-string comments))
-          (c/evict cache article)
+          (c/evict cache website article)
           (log/info {:comment-id comment-id
                      :article article}
                     (format "Comment %s for article %s approved" comment-id article)))
@@ -149,10 +160,10 @@
                            {:article article
                             :comment-id comment-id})))))
 
-  (delete-comment [this article comment-id]
+  (delete-comment [this website article comment-id]
     (locking lock
-      (if (article-exists? this article)
-        (let [comments (for-article this article true)
+      (if (article-exists? this website article)
+        (let [comments (for-article this website article true)
               filtered (remove #(= (:id %) comment-id) comments)]
           (when (= (count comments)
                    (count filtered))
@@ -163,9 +174,10 @@
                                {:comment-id comment-id
                                 :article article})))
           (store/save-resource s3
+                               website
                                (article-file-name article)
                                (json/generate-string filtered))
-          (c/evict cache article)
+          (c/evict cache website article)
           (log/info {:comment-id comment-id
                      :article article}
                     (format "Comment %s for article %s deleted" comment-id article)))
@@ -175,9 +187,9 @@
                            {:article article
                             :comment-id comment-id})))))
 
-  (get-comment [this article comment-id]
-    (if (article-exists? this article)
-      (if-let [comment (->> (for-article this article true)
+  (get-comment [this website article comment-id]
+    (if (article-exists? this website article)
+      (if-let [comment (->> (for-article this website article true)
                             (filter #(= (:id %) comment-id))
                             first)]
         comment
@@ -194,6 +206,6 @@
                           :comment-id comment-id}))))
   component/Lifecycle
   (start [this]
-    (assoc this :lock (Object.) :cache (c/ttl-cache-factory {} :ttl cache-ttl)))
+    (assoc this :lock (Object.)))
   (stop [this]
-    (assoc this :lock false :cache nil)))
+    (assoc this :lock false)))

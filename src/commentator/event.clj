@@ -28,16 +28,17 @@
    :type :new-comment})
 
 (defprotocol IEventManager
-  (add-event [this event])
-  (list-events [this])
-  (delete-event [this event-id]))
+  (add-event [this website event])
+  (list-events [this website])
+  (delete-event [this website event-id]))
 
 (defrecord EventManager [s3 lock]
   IEventManager
-  (add-event [this event]
+  (add-event [this website event]
     (locking lock
-      (let [events (list-events this)]
+      (let [events (list-events this website)]
         (store/save-resource s3
+                             website
                              event-file-name
                              (-> (conj events event)
                                  json/generate-string))
@@ -45,18 +46,18 @@
                    :event-type (:type event)}
                   (format "publish event %s" (:id event)))
         true)))
-  (list-events [this]
-    (if (store/exists? s3 event-file-name)
+  (list-events [this website]
+    (if (store/exists? s3 website event-file-name)
       (coax/coerce
        ::events
-       (-> (store/get-resource s3 event-file-name)
+       (-> (store/get-resource s3 website event-file-name)
            (json/parse-string true)
            vec))
       []))
-  (delete-event [this event-id]
+  (delete-event [this website event-id]
     (locking lock
-      (if (store/exists? s3 event-file-name)
-        (let [events (list-events this)
+      (if (store/exists? s3 website event-file-name)
+        (let [events (list-events this website)
               filtered (remove #(= (:id %) event-id) events)]
           (when (= (count events)
                    (count filtered))
@@ -65,6 +66,7 @@
                                [::not-found [:corbi/user ::ex/not-found]]
                                {:event-id event-id})))
           (store/save-resource s3
+                               website
                                event-file-name
                                (json/generate-string filtered))
           (log/info {:event-id event-id}

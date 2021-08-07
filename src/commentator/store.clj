@@ -8,10 +8,10 @@
            org.apache.commons.io.IOUtils))
 
 (defprotocol IStoreOperator
-  (exists? [this resource-name] "Checks if a retourne exists")
-  (get-resource [this resource-name] "Get a retourne by name")
-  (save-resource [this resource-name content] "Save a resource")
-  (delete-resource [this resource-name] "Delete a resource"))
+  (exists? [this website resource-name] "Checks if a retourne exists")
+  (get-resource [this website resource-name] "Get a retourne by name")
+  (save-resource [this website resource-name content] "Save a resource")
+  (delete-resource [this website resource-name] "Delete a resource"))
 
 (defn exists?-s3
   "Checks if a file exists in s3"
@@ -51,13 +51,24 @@
                               :content-md5 (String. (Base64/encodeBase64
                                                      digest))})))
 
-(defrecord S3 [credentials bucket]
+(defn bucket-name
+  [bucket-prefix website]
+  (str bucket-prefix website))
+
+(defrecord S3 [credentials bucket-prefix]
   IStoreOperator
-  (exists? [this resource-name]
-    (exists?-s3 credentials bucket resource-name))
-  (get-resource [this resource-name]
-    (get-resource-from-3 credentials bucket resource-name))
-  (save-resource [this resource-name content]
-    (save-on-s3 credentials bucket resource-name content))
-  (delete-resource [this resource-name]
-    (delete-resource-from-s3 credentials bucket resource-name)))
+  (exists? [this website resource-name]
+    (exists?-s3 credentials (bucket-name bucket-prefix website) resource-name))
+  (get-resource [this website resource-name]
+    (get-resource-from-3 credentials
+                         (bucket-name bucket-prefix website)
+                         resource-name))
+  (save-resource [this website resource-name content]
+    (save-on-s3 credentials
+                (bucket-name bucket-prefix website)
+                resource-name
+                content))
+  (delete-resource [this website resource-name]
+    (delete-resource-from-s3 credentials
+                             (bucket-name bucket-prefix website)
+                             resource-name)))
