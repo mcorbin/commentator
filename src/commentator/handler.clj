@@ -45,7 +45,7 @@
   (new-comment [this request]
     (let [article (req->article request)
           params (:all-params request)
-          comment (-> (merge (select-keys params [:content :author])
+          comment (-> (merge (select-keys params [:content :author :website])
                              {:id (UUID/randomUUID)
                               :approved false
                               :timestamp (System/currentTimeMillis)})

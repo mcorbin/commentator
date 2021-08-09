@@ -20,8 +20,11 @@
 (s/def ::author ::spec/non-empty-string)
 (s/def ::timestamp pos-int?)
 (s/def ::approved boolean?)
+(s/def ::author-website (s/and ::spec/non-empty-string
+                               #(< (count %) 128)))
 
-(s/def ::comment (s/keys :req-un [::id ::content ::author ::timestamp ::approved]))
+(s/def ::comment (s/keys :req-un [::id ::content ::author ::timestamp ::approved]
+                         :opt-un [::author-website]))
 (s/def ::comments (s/coll-of ::comment))
 
 (defprotocol ICommentManager

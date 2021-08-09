@@ -10,26 +10,27 @@
 (s/def ::answer ::spec/non-empty-string)
 (s/def ::comment-id ::comment/id)
 (s/def ::article ::spec/non-empty-string)
-(s/def ::website ::config/website)
 
 (s/def :comment/new (s/keys :req-un [::article
                                      ::comment/author
+                                     ::comment/email
                                      ::comment/content
+                                     ::comment/author-website
                                      ::challenge
+                                     ::config/website
                                      ::answer]))
 (s/def :comment/get (s/keys :req-un [::article
-                                     ::website
-                                     ::comment-id
-                                     ::website]))
+                                     ::config/website
+                                     ::comment-id]))
 (s/def :comment/for-article (s/keys :req-un [::article
-                                             ::website]))
-(s/def :comment/approve (s/keys :req-un [::article ::comment-id ::website]))
-(s/def :comment/delete (s/keys :req-un [::article ::comment-id ::website]))
-(s/def :comment/delete-article (s/keys :req-un [::article ::website]))
-(s/def :comment/admin-for-article (s/keys :req-un [::article ::website]))
+                                             ::config/website]))
+(s/def :comment/approve (s/keys :req-un [::article ::comment-id ::config/website]))
+(s/def :comment/delete (s/keys :req-un [::article ::comment-id ::config/website]))
+(s/def :comment/delete-article (s/keys :req-un [::article ::config/website]))
+(s/def :comment/admin-for-article (s/keys :req-un [::article ::config/website]))
 
-(s/def :event/delete (s/keys :req-un [::event/id ::website]))
-(s/def :event/list (s/keys :req-un [::website]))
+(s/def :event/delete (s/keys :req-un [::event/id ::config/website]))
+(s/def :event/list (s/keys :req-un [::config/website]))
 
 (def dispatch-map
   {:comment/new {:path ["api/v1/comment/" :website "/":article #"/?"]
