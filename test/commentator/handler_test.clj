@@ -23,7 +23,7 @@
 
 (deftest req->event-id-test
   (let [id (UUID/randomUUID)]
-    (is (= id (h/req->event-id {:all-params {:event-id id}})))))
+    (is (= id (h/req->event-id {:all-params {:id id}})))))
 
 (deftest new-comment-test
   (let [store (ms/store-mock {:exists? (constantly true)
@@ -35,7 +35,7 @@
         handler (h/map->Handler {:comment-manager comment-mng
                                  :event-manager event-mng
                                  :challenges {:c1 {:question "foo" :answer "bar"}}
-                                 :rate-limiter (component/start (rl/map->SimpleRateLimiter {}))})]
+                                 :rate-limiter (component/start (rl/map->SimpleRateLimiter {:rate-limit-minutes 1}))})]
     (let [response (h/new-comment handler {:all-params {:content "content"
                                                         :website website
                                                         :author "mcorbin"

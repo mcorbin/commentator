@@ -14,13 +14,15 @@
 
 (s/def ::host ::spec/non-empty-string)
 (s/def ::port pos-int?)
+(s/def ::allow-origin (s/coll-of ::spec/non-empty-string :min-count 1))
 (s/def ::key ::file)
 (s/def ::cert ::file)
 (s/def ::cacert ::file)
 (s/def ::http (s/keys :req-un [::host ::port]
                       :opt-un [::key ::cert ::cacert]))
 (s/def ::bucket-prefix (s/and ::spec/non-empty-string
-                              #(< (count %) 20)))
+                              #(< (count %) 20)
+                              #(re-matches #"^[a-zA-Z0-9-_]+$" %)))
 
 (s/def ::token ::cloak/secret)
 (s/def ::admin (s/keys :req-un [::token]))
@@ -45,10 +47,11 @@
 (s/def ::answer ::spec/non-empty-string)
 (s/def ::challenge (s/keys :req-un [::question ::answer]))
 (s/def ::challenges (s/map-of ::spec/keyword ::challenge))
+(s/def ::rate-limit-minutes pos-int?)
 
 (s/def ::prometheus ::http)
 
-(s/def ::config (s/keys :req-un [::http ::admin ::store ::challenges ::comment]
+(s/def ::config (s/keys :req-un [::http ::admin ::store ::challenges ::comment ::rate-limit-minutes]
                         :opt-un [::prometheus]))
 
 (defmethod aero/reader 'secret

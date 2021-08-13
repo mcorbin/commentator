@@ -7,13 +7,10 @@
 (defprotocol IRateLimiter
   (validate [this request] "Verifies if this request is not rate limited"))
 
-;; 10 minutes
-(def ttl (* 1000 60 10))
-
-(defrecord SimpleRateLimiter [ttl-cache]
+(defrecord SimpleRateLimiter [rate-limit-minutes ttl-cache]
   component/Lifecycle
   (start [this]
-    (assoc this :ttl-cache (c/ttl-cache-factory {} :ttl ttl)))
+    (assoc this :ttl-cache (c/ttl-cache-factory {} :ttl (* 1000 60 rate-limit-minutes))))
   (stop [this]
     (assoc this :ttl-cache nil))
   IRateLimiter

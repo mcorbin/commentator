@@ -13,12 +13,11 @@
 
 (s/def :comment/new (s/keys :req-un [::article
                                      ::comment/author
-                                     ::comment/email
                                      ::comment/content
-                                     ::comment/author-website
                                      ::challenge
                                      ::config/website
-                                     ::answer]))
+                                     ::answer]
+                            :opt-un [::comment/author-website]))
 (s/def :comment/get (s/keys :req-un [::article
                                      ::config/website
                                      ::comment-id]))
