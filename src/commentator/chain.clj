@@ -13,12 +13,12 @@
             [corbihttp.interceptor.response :as itc-response]))
 
 (defn interceptor-chain
-  [{:keys [token api-handler registry]}]
+  [{:keys [token api-handler registry allow-origin]}]
   [itc-response/response ;;leave
+   itc-json/json ;; leave
    (itc-error/last-error registry) ;;error
    (itc-metric/response-metrics registry) ;; leave
-   itc-cors/cors ;; leave
-   itc-json/json ;; leave
+   (itc-cors/cors allow-origin) ;; leave
    itc-error/error ;; error
    (itc-route/route {:dispatch-map api/dispatch-map
                      :registry registry

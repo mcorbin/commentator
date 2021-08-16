@@ -8,6 +8,7 @@
 (deftest auth-admin-test
   (let [token "my-super-token"
         chain (chain/interceptor-chain {:token (cloak/mask token)
+                                        :allow-origin #{"foo.com"}
                                         :api-handler
                                         (reify h/IHandler
                                           (new-comment [this request] {:status 200})
@@ -27,7 +28,9 @@
         resp-403 {:status 403
                   :body "{\"error\":\"Forbidden\"}",
                   :headers
-                  {"content-type" "application/json", "Access-Control-Allow-Origin" "*"}}]
+                  {"content-type" "application/json"
+                   "Access-Control-Allow-Origin" "foo.com"
+                   "Vary" "Origin"}}]
     (is (= resp-403
            (handler {:uri "/api/admin/comment/mcorbin/foo"
                      :request-method :get

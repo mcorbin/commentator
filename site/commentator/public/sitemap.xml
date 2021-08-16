@@ -3,8 +3,43 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://www.commentator.mcorbin.fr/api/comments/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/api/events/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/howto/get-build/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/howto/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/howto/configuration/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/api/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/api/monitoring/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.commentator.mcorbin.fr/</loc>
-    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/support/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.commentator.mcorbin.fr/howto/use-it/</loc>
   </url>
   
   <url>

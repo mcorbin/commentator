@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="description" content="">
+
+
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+
+    <title>Configuration :: Commentator</title>
+
+    
+    <link href="/css/nucleus.css?1629147077" rel="stylesheet">
+    <link href="/css/fontawesome-all.min.css?1629147077" rel="stylesheet">
+    <link href="/css/hybrid.css?1629147077" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1629147077" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1629147077" rel="stylesheet">
+    <link href="/css/auto-complete.css?1629147077" rel="stylesheet">
+    <link href="/css/atom-one-dark-reasonable.css?1629147077" rel="stylesheet">
+    <link href="/css/theme.css?1629147077" rel="stylesheet">
+    <link href="/css/tabs.css?1629147077" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1629147077" rel="stylesheet">
+    
+    <link href="/css/theme-commentator.css?1629147077" rel="stylesheet">
+    
+    
+
+    <script src="/js/jquery-3.3.1.min.js?1629147077"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/howto/configuration/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="https://www.commentator.mcorbin.fr">
+  <h2>Commentator</p>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/js/lunr.min.js?1629147077"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1629147077"></script>
+<script type="text/javascript">
+    
+        var baseurl = "https:\/\/www.commentator.mcorbin.fr";
+    
+</script>
+<script type="text/javascript" src="/js/search.js?1629147077"></script>
+
+    
+  </div>
+  
+    <section id="homelinks">
+      <ul>
+        <li>
+            <a class="padding" href='/'><i class='fas fa-home'></i> Home</a>
+        </li>
+      </ul>
+    </section>
+  
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/" title="How to" class="dd-item
+        parent
+        
+        
+        ">
+      <a href="/howto/">
+          How to
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/get-build/" title="Get and launch Commentator" class="dd-item
+        
+        
+        
+        ">
+      <a href="/howto/get-build/">
+          Get and launch Commentator
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/configuration/" title="Configuration" class="dd-item
+        parent
+        active
+        
+        ">
+      <a href="/howto/configuration/">
+          Configuration
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/use-it/" title="Use it" class="dd-item
+        
+        
+        
+        ">
+      <a href="/howto/use-it/">
+          Use it
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/" title="API" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/">
+          API
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/comments/" title="Comments" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/comments/">
+          Comments
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/events/" title="Events" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/events/">
+          Events
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/monitoring/" title="Monitoring API" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/monitoring/">
+          Monitoring API
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/support/" title="Support and contributions" class="dd-item
+        
+        
+        
+        ">
+      <a href="/support/">
+          Support and contributions
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+          
+        
+    </ul>
+
+    
+    
+      <section id="shortcuts">
+        <h3>More</h3>
+        <ul>
+          
+              <li>
+                  <a class="padding" href="https://github.com/mcorbin/commentator"><i class='fab fa-github'></i> Github repo</a>
+              </li>
+          
+              <li>
+                  <a class="padding" href="https://github.com/matcornic/hugo-theme-learn/"><i class='fas fa-bookmark'></i> Site theme</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="footer">
+      <b><p>Powered by <a href="https://mcorbin.fr">mcorbin</a></p></b>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/'>Support and contributions</a> > <a href='/howto/'>How to</a> > Configuration
+          
+        
+          
+        
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents"></nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Configuration
+            </h1>
+          
+
+        
+
+
+
+	<p>The Commentator configuration is defined in <a href="https://github.com/edn-format/edn">EDN</a>.
+Here is a commented example configuration file:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">{<span style="color:#75715e">;; The Mirabelle HTTP Server.</span>
+ <span style="color:#75715e">;; The key, cert, and cacert optional parameters can be set to enable TLS (the</span>
+ <span style="color:#75715e">;; parameters are path to the cert files)</span>
+ <span style="color:#e6db74">:http</span> {<span style="color:#e6db74">:host</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>
+        <span style="color:#e6db74">:port</span> <span style="color:#ae81ff">8787</span>}
+ <span style="color:#75715e">;; The list of allowed origins for the public API.</span>
+ <span style="color:#e6db74">:allow-origin</span> [<span style="color:#e6db74">&#34;https://www.mcorbin.fr&#34;</span>]
+ <span style="color:#75715e">;; The admin token for the admin API calls</span>
+ <span style="color:#e6db74">:admin</span> {<span style="color:#e6db74">:token</span> <span style="color:#f92672">#</span>secret <span style="color:#e6db74">&#34;my-super-token&#34;</span>}
+ <span style="color:#75715e">;; The number of minutes for an user before being able to publish another comment</span>
+ <span style="color:#75715e">;; on Commentator.</span>
+ <span style="color:#75715e">;; The `x-forwarded-for` header is first used to get the user IP</span>
+ <span style="color:#75715e">;; If the header is not set it fallbacks to the request source IP.</span>
+ <span style="color:#e6db74">:rate-limit-minutes</span> <span style="color:#ae81ff">5</span>
+ <span style="color:#e6db74">:store</span> {<span style="color:#75715e">;; Your s3 access/secret keys</span>
+         <span style="color:#75715e">;; In this example the #env reader is used but you can also</span>
+         <span style="color:#75715e">;; specify the values without using environment variables if you</span>
+         <span style="color:#75715e">;; want to</span>
+         <span style="color:#e6db74">:access-key</span> <span style="color:#f92672">#</span>secret <span style="color:#f92672">#</span>env ACCESS_KEY
+         <span style="color:#e6db74">:secret-key</span> <span style="color:#f92672">#</span>secret <span style="color:#f92672">#</span>env SECRET_KEY
+         <span style="color:#75715e">;; the prefix for the buckets used by Commentator to store comments</span>
+         <span style="color:#75715e">;; and events</span>
+         <span style="color:#e6db74">:bucket-prefix</span> <span style="color:#e6db74">&#34;commentator-dev-&#34;</span>
+         <span style="color:#75715e">;; The S3 endpoint</span>
+         <span style="color:#e6db74">:endpoint</span> <span style="color:#e6db74">&#34;https://sos-ch-gva-2.exo.io&#34;</span>}
+ <span style="color:#e6db74">:comment</span> {<span style="color:#75715e">;; Set to true if you want to have comments automatically approved once</span>
+           <span style="color:#75715e">;; created</span>
+           <span style="color:#e6db74">:auto-approve</span> false
+           <span style="color:#75715e">;; A map containing for each website a list of articles which can receive</span>
+           <span style="color:#75715e">;; comments. You can use this map to disable comments for an article</span>
+           <span style="color:#75715e">;; for example.</span>
+           <span style="color:#e6db74">:allowed-articles</span> {<span style="color:#e6db74">&#34;mcorbin-fr&#34;</span> [<span style="color:#e6db74">&#34;foo&#34;</span>
+                                            <span style="color:#e6db74">&#34;bar&#34;</span>]}}
+ <span style="color:#75715e">;; Logging configuration (https://github.com/pyr/unilog)</span>
+ <span style="color:#e6db74">:logging</span> {<span style="color:#e6db74">:level</span> <span style="color:#e6db74">&#34;info&#34;</span>
+           <span style="color:#e6db74">:console</span> {<span style="color:#e6db74">:encoder</span> <span style="color:#e6db74">&#34;json&#34;</span>}
+           <span style="color:#e6db74">:overrides</span> {<span style="color:#e6db74">:org.eclipse.jetty</span> <span style="color:#e6db74">&#34;info&#34;</span>
+                       <span style="color:#e6db74">:org.apache.http</span> <span style="color:#e6db74">&#34;error&#34;</span>}}
+ <span style="color:#75715e">;; The prometheus configuration to expose the metrics.</span>
+ <span style="color:#75715e">;; The key, cert, and cacert optional parameters can be set to enable TLS (the</span>
+ <span style="color:#75715e">;; parameters are path to the cert files)</span>
+ <span style="color:#e6db74">:prometheus</span> {<span style="color:#e6db74">:host</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>
+              <span style="color:#e6db74">:port</span> <span style="color:#ae81ff">8788</span>}
+ <span style="color:#75715e">;; A list of challenges to avoid spammers</span>
+ <span style="color:#e6db74">:challenges</span> {<span style="color:#e6db74">:c1</span> {<span style="color:#e6db74">:question</span> <span style="color:#e6db74">&#34;1 + 4 = ?&#34;</span>
+                   <span style="color:#e6db74">:answer</span> <span style="color:#e6db74">&#34;5&#34;</span>}
+              <span style="color:#e6db74">:c2</span> {<span style="color:#e6db74">:question</span> <span style="color:#e6db74">&#34;1 + 9 = ?&#34;</span>
+                   <span style="color:#e6db74">:answer</span> <span style="color:#e6db74">&#34;10&#34;</span>}}}
+</code></pre></div><p>Commentator can be used to store comments for multiple websites.</p>
+<p>The <code>:allowed-articles</code> key should contain the list of articles open for comments for each website. The website names and articles should match the ones used in the <a href="/api/comments/">API</a>. You can also check the <a href="/howto/use-it/">use it</a> section of the documentation for more information about this.</p>
+<p>Each website will have a dedicated bucket to store its comments and events.</p>
+<p>The bucket name will be <code>&lt;bucket-prefix&gt;&lt;sebsite-name&gt;</code>. The bucket prefix should be a string between 1 and 19 characters, and the website a string between 1 and 39 characters. Allowed characters are letters (both uppercase and lowercase), number, <code>_</code> and <code>-</code>.</p>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div>
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/howto/get-build/" title="Get and launch Commentator"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/howto/use-it/" title="Use it" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1629147077"></script>
+    <script src="/js/perfect-scrollbar.min.js?1629147077"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1629147077"></script>
+    <script src="/js/jquery.sticky.js?1629147077"></script>
+    <script src="/js/featherlight.min.js?1629147077"></script>
+    <script src="/js/highlight.pack.js?1629147077"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom-3.6.0.js?1629147077"></script>
+    <script src="/js/learn.js?1629147077"></script>
+    <script src="/js/hugo-learn.js?1629147077"></script>
+    
+        
+            <script src="/mermaid/mermaid.js?1629147077"></script>
+        
+        <script>
+            mermaid.initialize({ startOnLoad: true });
+        </script>
+    
+    
+
+  </body>
+</html>

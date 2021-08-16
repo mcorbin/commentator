@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="description" content="">
+
+
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+
+    <title>Use it :: Commentator</title>
+
+    
+    <link href="/css/nucleus.css?1629147077" rel="stylesheet">
+    <link href="/css/fontawesome-all.min.css?1629147077" rel="stylesheet">
+    <link href="/css/hybrid.css?1629147077" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1629147077" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1629147077" rel="stylesheet">
+    <link href="/css/auto-complete.css?1629147077" rel="stylesheet">
+    <link href="/css/atom-one-dark-reasonable.css?1629147077" rel="stylesheet">
+    <link href="/css/theme.css?1629147077" rel="stylesheet">
+    <link href="/css/tabs.css?1629147077" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1629147077" rel="stylesheet">
+    
+    <link href="/css/theme-commentator.css?1629147077" rel="stylesheet">
+    
+    
+
+    <script src="/js/jquery-3.3.1.min.js?1629147077"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+        :not(pre) > code + span.copy-to-clipboard {
+            display: none;
+        }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="/howto/use-it/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="https://www.commentator.mcorbin.fr">
+  <h2>Commentator</p>
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="/js/lunr.min.js?1629147077"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1629147077"></script>
+<script type="text/javascript">
+    
+        var baseurl = "https:\/\/www.commentator.mcorbin.fr";
+    
+</script>
+<script type="text/javascript" src="/js/search.js?1629147077"></script>
+
+    
+  </div>
+  
+    <section id="homelinks">
+      <ul>
+        <li>
+            <a class="padding" href='/'><i class='fas fa-home'></i> Home</a>
+        </li>
+      </ul>
+    </section>
+  
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/" title="How to" class="dd-item
+        parent
+        
+        
+        ">
+      <a href="/howto/">
+          How to
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/get-build/" title="Get and launch Commentator" class="dd-item
+        
+        
+        
+        ">
+      <a href="/howto/get-build/">
+          Get and launch Commentator
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/configuration/" title="Configuration" class="dd-item
+        
+        
+        
+        ">
+      <a href="/howto/configuration/">
+          Configuration
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/howto/use-it/" title="Use it" class="dd-item
+        parent
+        active
+        
+        ">
+      <a href="/howto/use-it/">
+          Use it
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/" title="API" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/">
+          API
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/comments/" title="Comments" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/comments/">
+          Comments
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/events/" title="Events" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/events/">
+          Events
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/api/monitoring/" title="Monitoring API" class="dd-item
+        
+        
+        
+        ">
+      <a href="/api/monitoring/">
+          Monitoring API
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+      
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/support/" title="Support and contributions" class="dd-item
+        
+        
+        
+        ">
+      <a href="/support/">
+          Support and contributions
+          
+      </a>
+      
+      
+    </li>
+  
+ 
+
+          
+        
+    </ul>
+
+    
+    
+      <section id="shortcuts">
+        <h3>More</h3>
+        <ul>
+          
+              <li>
+                  <a class="padding" href="https://github.com/mcorbin/commentator"><i class='fab fa-github'></i> Github repo</a>
+              </li>
+          
+              <li>
+                  <a class="padding" href="https://github.com/matcornic/hugo-theme-learn/"><i class='fas fa-bookmark'></i> Site theme</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="footer">
+      <b><p>Powered by <a href="https://mcorbin.fr">mcorbin</a></p></b>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='/'>Support and contributions</a> > <a href='/howto/'>How to</a> > Use it
+          
+        
+          
+        
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#integration">Integration</a></li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Use it
+            </h1>
+          
+
+        
+
+
+
+	<p>Commentator stores the articles comments on a S3 compatible store. +
+Let&rsquo;s say we want to store comments for the blog <code>mcorbin.fr</code> for example.</p>
+<p>The first thing to do is to write the Commentator <a href="/howto/configuration/">configuration file</a>.</p>
+<p>As explained in the linked section of the documentation, several things are important.</p>
+<p><strong>Allow origin</strong></p>
+<p>The same Commentator instance can serve comments for several websites. You need to configure the list of websites in the <code>:allow-origin</code> section.</p>
+<p><strong>Rate limit</strong></p>
+<p>The <code>:rate-limit-minutes</code> option prevents users to create more than one comment every N minutes.</p>
+<p>The <code>x-forwarded-for</code> header is first used to get the user IP. If the header is not set it fallbacks to the request source IP.</p>
+<p><strong>Comment</strong></p>
+<p>Comments can be automatically approved by setting the <code>:auto-approve</code> value to <code>true</code>. By default, comments not approved by an administrator are not displayed.</p>
+<p>You also need to configure the <code>allowed-articles</code> key. It contains a map containing for each website the list of articles allowed to receive comments. For example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">{<span style="color:#e6db74">&#34;mcorbin-fr&#34;</span> [<span style="color:#e6db74">&#34;my-first-article&#34;</span>
+               <span style="color:#e6db74">&#34;my-second-article&#34;</span>]}
+</code></pre></div><p>With this setup, only requests to create comments on the <code>/api/v1/comment/&lt;website&gt;/&lt;article&gt;</code> path will be allowed, where the possible value for <code>&lt;website&gt;</code> is &ldquo;mcorbin-fr&rdquo; and the possible values for <code>&lt;article&gt;</code> are &ldquo;my-first-article&rdquo; and &ldquo;my-second-article&rdquo;.</p>
+<p>You can read the <a href="/api/comments/">API documentation</a> to understand how it works. It&rsquo;s important to keep in mind that the <code>allowed-articles</code> key should match how the API is used later to store and retrieve comments for articles.</p>
+<p><strong>Challenges</strong></p>
+<p>Commentator supports a basic challenge system to avoid spammers. It&rsquo;s not perfect (and I have some idea to greatly improve it in the future) but it already helps filtering bots.</p>
+<p>The <code>:challenges</code> key in the configuration map is a map containing for each challenge a question and a answer. For example:</p>
+<pre><code>{:c1 {:question &quot;1 + 4 = ?&quot;
+      :answer &quot;5&quot;}
+ :c2 {:question &quot;1 + 9 = ?&quot;
+      :answer &quot;10&quot;}}
+</code></pre><p>We have here two challenges named <code>:c1</code> and <code>:c2</code>, with simple questions about mathematical operations. The questions and answers are totally free, it&rsquo;s up to you to choose what you want to ask.</p>
+<p>You can also easily generate a lot of challenges programmatically if you want to.</p>
+<p>When users want to create a comment, they should provide a challenge name and the correct answer. The case of the letters in the answer is not important, everything is compared after being converted to lower case.</p>
+<p>Commentator provides an <a href="/api/comments/">API endpoint</a> to return a random challenge (the name and its question). This API endpoint can be used to integrate Commentator on your website.</p>
+<p><strong>Store</strong></p>
+<p>You should put the store configuration (to access the S3 storage) in the <code>:store</code> key.</p>
+<p>The <code>:bucket-prefix</code> value will be used as prefix for the buckets storing the comments. For example, if <code>:bucket-prefix</code> is set to &ldquo;commentator-&rdquo;, the bucket will be &ldquo;commentator-mcorbin-fr&rdquo; for the <code>mcorbin-fr</code> website.</p>
+<p>The buckets should already exist, Commentator will not create them automatically.</p>
+<h2 id="events">Events</h2>
+<p>Every time a comment is published, an event is pushed in the website bucket in a file named <code>events.json</code>.</p>
+<p>The <a href="/api/events/">API</a> let you retrieve and delete these events. You can use this file or these endpoints to be notified when a new comment is created.</p>
+<h2 id="integration">Integration</h2>
+<p>TODO</p>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div>
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="/howto/configuration/" title="Configuration"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="/api/" title="API" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="/js/clipboard.min.js?1629147077"></script>
+    <script src="/js/perfect-scrollbar.min.js?1629147077"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1629147077"></script>
+    <script src="/js/jquery.sticky.js?1629147077"></script>
+    <script src="/js/featherlight.min.js?1629147077"></script>
+    <script src="/js/highlight.pack.js?1629147077"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="/js/modernizr.custom-3.6.0.js?1629147077"></script>
+    <script src="/js/learn.js?1629147077"></script>
+    <script src="/js/hugo-learn.js?1629147077"></script>
+    
+        
+            <script src="/mermaid/mermaid.js?1629147077"></script>
+        
+        <script>
+            mermaid.initialize({ startOnLoad: true });
+        </script>
+    
+    
+
+  </body>
+</html>

@@ -38,14 +38,14 @@
 
 (defn req->event-id
   [request]
-  (get-in request [:all-params :event-id]))
+  (get-in request [:all-params :id]))
 
 (defrecord Handler [comment-manager event-manager rate-limiter challenges]
   IHandler
   (new-comment [this request]
     (let [article (req->article request)
           params (:all-params request)
-          comment (-> (merge (select-keys params [:content :author :website])
+          comment (-> (merge (select-keys params [:content :author :author-website])
                              {:id (UUID/randomUUID)
                               :approved false
                               :timestamp (System/currentTimeMillis)})
@@ -118,7 +118,7 @@
   (list-events [this request]
     (let [website (req->website request)]
       {:status 200
-       :body (ce/list-events website event-manager)}))
+       :body (ce/list-events event-manager website)}))
 
   (delete-event [this request]
     (let [event-id (req->event-id request)

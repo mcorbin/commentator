@@ -4,7 +4,7 @@
             [commentator.rate-limit :as rl]))
 
 (deftest rate-limiter-test
-  (let [limiter (component/start (rl/map->SimpleRateLimiter {}))]
+  (let [limiter (component/start (rl/map->SimpleRateLimiter {:rate-limit-minutes 10}))]
     (is (rl/validate limiter {:remote-addr "10.1.1.2"}))
     (is (thrown-with-msg?
          Exception

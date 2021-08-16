@@ -30,18 +30,26 @@
     comment-config))
 
 (defn build-system
-  [{:keys [http admin store comment challenges prometheus]}]
+  [{:keys [http
+           admin
+           store
+           comment
+           challenges
+           prometheus
+           rate-limit-minutes
+           allow-origin]}]
   (let [registry (metric/registry-component {})]
     (component/system-map
      :registry registry
      :http (-> (corbihttp/map->Server (merge {:config http
                                               :chain-builder chain/interceptor-chain
-                                              :registry registry}
+                                              :registry registry
+                                              :allow-origin (set allow-origin)}
                                              admin))
                (component/using [:api-handler]))
      :s3 (store/map->S3 {:credentials (dissoc store :bucket)
                          :bucket-prefix (:bucket-prefix store)})
-     :rate-limiter (rate-limit/map->SimpleRateLimiter {})
+     :rate-limiter (rate-limit/map->SimpleRateLimiter {:rate-limit-minutes rate-limit-minutes})
      :event-manager (-> (event/map->EventManager {})
                         (component/using [:s3]))
      :comment-manager (-> (comment/map->CommentManager (allowed-articles-set

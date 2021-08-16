@@ -1,5 +1,7 @@
 {:http {:host "127.0.0.1"
         :port 8787}
+ :allow-origin ["https://www.mcorbin.fr"]
+ :rate-limit-minutes 5
  :admin {:token #secret "my-super-token"}
  :store {:access-key #secret #env ACCESS_KEY
          :secret-key #secret #env SECRET_KEY
