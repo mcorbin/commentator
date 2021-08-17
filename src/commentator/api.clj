@@ -67,7 +67,7 @@
                 :method :get
                 :spec :event/list
                 :handler-fn handler/list-events}
-   :event/delete {:path ["api/admin/event/" :website "/" :event-id #"/?"]
+   :event/delete {:path ["api/admin/event/" :website "/" :id #"/?"]
                   :spec :event/delete
                   :method :delete
                   :handler-fn handler/delete-event}
