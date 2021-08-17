@@ -8,7 +8,8 @@ chapter: false
 
 Commentator is a simple application which provide all you need to have a powerful commenting system on your blogs or websites.
 
-Commentator uses json files (one per article) stored on any S3-compatible storage to store your comment. The rest of the application is completely stateless. +
+Commentator uses json files (one per article) stored on any S3-compatible storage to store your comment. The rest of the application is completely stateless.
+
 Using a S3 compatible store as a database provide several advantages:
 
 - Easy to use: you don't have to setup a SQL database for example.

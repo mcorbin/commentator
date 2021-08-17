@@ -1,5 +1,5 @@
 ---
-title: Monitoring API
+title: Monitoring
 weight: 30
 disableToc: false
 ---

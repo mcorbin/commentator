@@ -73,4 +73,6 @@ The [API](/api/events/) let you retrieve and delete these events. You can use th
 
 ## Integration
 
-TODO
+The code I use to integrate Commentator on my personal blog is available on [Github](https://github.com/mcorbin/commentator/blob/master/integration/mcorbin/page.html).
+
+I'm not a frontend developer. If you have frontend skills and want to write a nice integration, please reach to me on Github.

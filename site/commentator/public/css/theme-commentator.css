@@ -3,8 +3,8 @@
 
     --MAIN-TEXT-color:#323232; /* Color of text by default */
     --MAIN-TITLES-TEXT-color: #5e5e5e; /* Color of titles h2-h3-h4-h5 */
-    --MAIN-LINK-color: #0199b1; /* Color of links */
-    --MAIN-LINK-HOVER-color:#167ad0; /* Color of hovered links */
+    --MAIN-LINK-color: #0007c9; /* Color of links */
+    --MAIN-LINK-HOVER-color:#0007c9; /* Color of hovered links */
     --MAIN-ANCHOR-color: #1C90F3; /* color of anchors on titles */
 
     --MENU-HOME-LINK-color: #323232; /* Color of the home button text */
