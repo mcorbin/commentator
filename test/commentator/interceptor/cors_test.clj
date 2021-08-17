@@ -4,8 +4,8 @@
 
 (deftest get-origin-test
   (is (= "foo.com"
-         (cors/get-origin {:headers {"Origin" "foo.com"}}
+         (cors/get-origin {:headers {"origin" "foo.com"}}
                           #{"bar.com" "foo.com"})))
     (is (= "bar.com"
-         (cors/get-origin {:headers {"Origin" "foo.com"}}
+         (cors/get-origin {:headers {"origin" "foo.com"}}
                           #{"bar.com"}))))

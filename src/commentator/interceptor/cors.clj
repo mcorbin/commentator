@@ -5,7 +5,7 @@
   "Returns the value to set to the Access-Control-Allow-Origin header, or the
   random value from allow-origin if the request Origin is lot allowed"
   [request allow-origin]
-  (or (allow-origin (get-in request [:headers "Origin"]))
+  (or (allow-origin (get-in request [:headers "origin"]))
       (first allow-origin)))
 
 (defn cors
