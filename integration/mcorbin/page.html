@@ -1,12 +1,11 @@
-<!--This is what happens when a backend dev does frontend work-->
-{% if not post.disable-comments %}
+-<!--This is what happens when a backend dev does frontend work-->
 <script>
   $( document ).ready(function() {
-      $.get("https://comments.mcorbin.fr/api/v1/challenge", function(data) {
+      $.get("https://www.comments.mcorbin.fr/api/v1/challenge", function(data) {
           $('#challenge_question').text(data.question);
           $('#challenge_name span').text(data.name);
       });
-      $.get("https://comments.mcorbin.fr/api/v1/comment/mcorbin-fr/{{filename}}", function(data) {
+      $.get("https://www.comments.mcorbin.fr/api/v1/comment/mcorbin-fr/{{filename}}", function(data) {
           for (i=0; i<data.length; i++) {
 
               response = data[i];
@@ -43,7 +42,7 @@
           $.ajax
           ({
               type: "POST",
-              url: "https://comments.mcorbin.fr/api/v1/comment/mcorbin-fr/{{filename}}",
+              url: "https://www.comments.mcorbin.fr/api/v1/comment/mcorbin-fr/{{filename}}",
               dataType: 'json',
               contentType: 'application/json',
               data: JSON.stringify({"author": $("#new_comment_author").val(),
@@ -54,7 +53,7 @@
                   $('#comment_result span').text("The comment will be approved soon.");
               },
               error: function () {
-                  $('#comment_result span').text("Fail to add the comment. Please contact the website owner.");
+                  $('#comment_result span').text("Fail to add the comment. Please contact the website owner (the email is in the About section of the website). Thank you in advance.");
               }
           })
       });
@@ -78,6 +77,7 @@
 
     <b><span id="challenge_question"></span></b><br/>
     <input type="text" id="challenge_answer" name="challenge_answer" placeholder="Answer" size="40"><br><br>
+    <p>If you have a bug/issue with the commenting system, please send me an email (my email is in the "About" section).</p>
     <input id="comment_create" type="button" value="Add comment" class="btn btn-primary btn-lg"/>
     <div id="comment_result">
       <span></span>
@@ -89,4 +89,3 @@
 <div id="comment_block">
   <p>Comments are disabled for this article</p>
 </div>
-{% endif %}
