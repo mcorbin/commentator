@@ -1,5 +1,5 @@
 ---
-title: Support and contributions
+title: Commentator
 weight: 30
 chapter: false
 ---
@@ -19,7 +19,7 @@ Using a S3 compatible store as a database provide several advantages:
 Commentator also provides:
 
 - Multi site support: one instance of Commentator can manage comments for multiple websites.
--  An easy-to-use API to manage comments and events. A public API allows users to create or retrieve approved comments, and a admin API allows you to administrate comments (approve them or delete them for example). +
+-  An easy-to-use API to manage comments and events. A public API allows users to create or retrieve approved comments, and a admin API allows you to administrate comments (approve them or delete them for example).
 Everytime a comment is added an event is generated into a dedicated file on S3. The API allows you to read and delete the events. You can use this file to be notified when a new comment is added.
 - Rate limiting, either by IP or using the requests `x-forwarded-for` header.
 - A "challenge" system to avoid spammers.
