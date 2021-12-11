@@ -3,24 +3,24 @@
   :url "https://github.com/mcorbin/commentator"
   :license {:name "EPL-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
-  :dependencies [[amazonica "0.3.153"
+  :dependencies [[amazonica "0.3.156"
                   :exclusions
                   [com.amazonaws/aws-java-sdk
                    com.amazonaws/amazon-kinesis-client]]
-                 [cheshire "5.10.0"]
-                 [com.amazonaws/aws-java-sdk-core "1.11.913"]
-                 [com.amazonaws/aws-java-sdk-s3 "1.11.913"]
+                 [cheshire "5.10.1"]
+                 [com.amazonaws/aws-java-sdk-core "1.12.128"]
+                 [com.amazonaws/aws-java-sdk-s3 "1.12.128"]
                  (exoscale/coax "1.0.0-alpha10")
-                 [fr.mcorbin/corbihttp "0.16.0"]
+                 [fr.mcorbin/corbihttp "0.18.0"]
                  [org.clojure/clojure "1.10.3"]
-                 [org.clojure/core.cache "1.0.207"]
+                 [org.clojure/core.cache "1.0.225"]
                  [spootnik/signal "0.2.4"]]
   :main ^:skip-aot commentator.core
   :target-path "target/%s"
   :source-paths ["src"]
-  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "1.1.0"]
-                                  [pjstadig/humane-test-output "0.10.0"]
-                                  [tortue/spy "2.4.0"]
+  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "1.2.0"]
+                                  [pjstadig/humane-test-output "0.11.0"]
+                                  [tortue/spy "2.9.0"]
                                   [ring/ring-mock "0.4.0"]]
                    :global-vars    {*assert* true}
                    :env {:commentator-configuration "dev/resources/config.edn"}

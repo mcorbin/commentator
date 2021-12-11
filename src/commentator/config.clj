@@ -21,7 +21,7 @@
 (s/def ::http (s/keys :req-un [::host ::port]
                       :opt-un [::key ::cert ::cacert]))
 (s/def ::bucket-prefix (s/and ::spec/non-empty-string
-                              #(< (count %) 20)
+                              #(< (count %) 25)
                               #(re-matches #"^[a-zA-Z0-9-_]+$" %)))
 
 (s/def ::token ::cloak/secret)

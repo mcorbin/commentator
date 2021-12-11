@@ -98,6 +98,10 @@
       []))
 
   (delete-article [this website article]
+    (log/infof {}
+               "Delete comments for %s/%s"
+               website
+               article)
     (locking lock
       (when (article-exists? this website article)
         (c/evict cache website article)
@@ -108,11 +112,11 @@
     (locking lock
       (if (article-exists? this website article)
         (let [comments (for-article this website article true)]
-          (log/infof  {}
-                      "Adding comment %s for %s/%s"
-                      (:id comment)
-                      website
-                      article)
+          (log/infof {}
+                     "Adding comment %s for %s/%s"
+                     (:id comment)
+                     website
+                     article)
           (store/save-resource s3
                                website
                                (article-file-name article)
@@ -176,6 +180,11 @@
                                [::not-found [:corbi/user ::ex/not-found]]
                                {:comment-id comment-id
                                 :article article})))
+          (log/infof  {}
+                      "deleting comment %s for %s/%s"
+                      comment-id
+                      website
+                      article)
           (store/save-resource s3
                                website
                                (article-file-name article)
