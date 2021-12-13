@@ -20,9 +20,9 @@
   (stop [this]
     (assoc this :cache nil))
   Cache
-  (lookup [this website article]
+  (lookup [_ website article]
     (c/lookup cache (cache-key website article)))
-  (miss [this website article comments]
+  (miss [_ website article comments]
     (c/miss cache (cache-key website article) comments))
-  (evict [this website article]
+  (evict [_ website article]
     (c/evict cache (cache-key website article))))

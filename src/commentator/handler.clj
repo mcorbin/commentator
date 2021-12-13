@@ -42,7 +42,7 @@
 
 (defrecord Handler [comment-manager event-manager rate-limiter challenges]
   IHandler
-  (new-comment [this request]
+  (new-comment [_ request]
     (let [article (req->article request)
           params (:all-params request)
           comment (-> (merge (select-keys params [:content :author :author-website])
@@ -55,7 +55,7 @@
           website (:website params)]
       (ex/assert-spec-valid ::cc/comment comment)
       (challenge/verify challenges challenge answer)
-      (rate-limit/validate rate-limiter request)
+      (rate-limit/validate rate-limiter request website)
       (cc/add-comment comment-manager website article comment)
       (future (try (ce/add-event event-manager
                                  website
@@ -70,57 +70,57 @@
       {:status 201
        :body {:message "Comment added"}}))
 
-  (get-comment [this request]
+  (get-comment [_ request]
     (let [article (req->article request)
           comment-id (req->comment-id request)
           website (req->website request)]
       {:status 200
        :body (cc/get-comment comment-manager website article comment-id)}))
 
-  (comments-for-article [this request]
+  (comments-for-article [_ request]
     (let [article (req->article request)
           website (req->website request)]
       {:status 200
        :body (cc/for-article comment-manager website article)}))
 
-  (admin-for-article [this request]
+  (admin-for-article [_ request]
     (let [article (req->article request)
           website (req->website request)]
       {:status 200
        :body (cc/for-article comment-manager website article true)}))
 
-  (delete-comment [this request]
+  (delete-comment [_ request]
     (let [article (req->article request)
           comment-id (req->comment-id request)
           website (req->website request)]
       (cc/delete-comment comment-manager website article comment-id)
       {:status 200 :body {:message "Comment deleted"}}))
 
-  (delete-article-comments [this request]
+  (delete-article-comments [_ request]
     (let [article (req->article request)
           website (req->website request)]
       (cc/delete-article comment-manager website article)
       {:status 200 :body {:message "Comments deleted"}}))
 
-  (approve-comment [this request]
+  (approve-comment [_ request]
     (let [article (req->article request)
           comment-id (req->comment-id request)
           website (req->website request)]
       (cc/approve-comment comment-manager website article comment-id)
       {:status 200 :body {:message "Comment approved"}}))
 
-  (random-challenge [this request]
+  (random-challenge [_ request]
     (let [challenge (challenge/random challenges)]
       {:status 200
        :body {:name challenge
               :question (get-in challenges [challenge :question])}}))
 
-  (list-events [this request]
+  (list-events [_ request]
     (let [website (req->website request)]
       {:status 200
        :body (ce/list-events event-manager website)}))
 
-  (delete-event [this request]
+  (delete-event [_ request]
     (let [event-id (req->event-id request)
           website (req->website request)]
       (ce/delete-event event-manager website event-id)
@@ -128,14 +128,14 @@
        :body {:message "Event deleted"}}))
 
   ;; TODO
-  (metrics [this request]
+  (metrics [_ _]
     {:status 200
      :body ""})
 
-  (healthz [this request]
+  (healthz [_ _]
     {:status 200
      :body {:message "ok"}})
 
-  (not-found [this request]
+  (not-found [_ _]
     {:status 404
      :body {:error "not found"}}))
