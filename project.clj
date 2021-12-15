@@ -1,4 +1,4 @@
-(defproject commentator "0.8.0"
+(defproject commentator "0.10.0"
   :description "A Free commenting server"
   :url "https://github.com/mcorbin/commentator"
   :license {:name "EPL-2.0"
