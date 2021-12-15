@@ -4,6 +4,7 @@
             [commentator.cache :as c]
             [commentator.comment :as comment]
             [commentator.mock.s3 :as ms]
+            [commentator.lock :as lock]
             [com.stuartsierra.component :as component]
             [spy.assert :as assert]
             [spy.protocol :as protocol])
@@ -41,6 +42,7 @@
   ([store auto-approve allowed-articles]
    (component/start (comment/map->CommentManager {:auto-approve auto-approve
                                                   :allowed-articles allowed-articles
+                                                  :lock (component/start (lock/map->Lock {}))
                                                   :cache (component/start
                                                           (c/map->MemoryCache {}))
                                                   :s3 store}))))

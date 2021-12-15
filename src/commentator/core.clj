@@ -6,6 +6,7 @@
             [commentator.event :as event]
             [commentator.handler :as handler]
             [commentator.chain :as chain]
+            [commentator.lock :as lock]
             [commentator.rate-limit :as rate-limit]
             [commentator.store :as store]
             [corbihttp.http :as corbihttp]
@@ -40,6 +41,7 @@
            allow-origin]}]
   (let [registry (metric/registry-component {})]
     (component/system-map
+     :lock (lock/map->Lock {})
      :registry registry
      :http (-> (corbihttp/map->Server (merge {:config http
                                               :chain-builder chain/interceptor-chain
@@ -51,10 +53,10 @@
                          :bucket-prefix (:bucket-prefix store)})
      :rate-limiter (rate-limit/map->SimpleRateLimiter {:rate-limit-minutes rate-limit-minutes})
      :event-manager (-> (event/map->EventManager {})
-                        (component/using [:s3]))
+                        (component/using [:s3 :lock]))
      :comment-manager (-> (comment/map->CommentManager (allowed-articles-set
                                                         comment))
-                          (component/using [:s3 :cache]))
+                          (component/using [:s3 :cache :lock]))
      :prometheus (if (and prometheus (seq prometheus))
                    (corbihttp/map->Server {:config prometheus
                                            :registry registry

@@ -6,6 +6,7 @@
             [commentator.event :as event]
             [commentator.handler :as h]
             [commentator.mock.s3 :as ms]
+            [commentator.lock :as lock]
             [commentator.rate-limit :as rl]
             [spy.assert :as assert]
             [spy.core :as spy]
@@ -26,12 +27,13 @@
     (is (= id (h/req->event-id {:all-params {:id id}})))))
 
 (deftest new-comment-test
-  (let [store (ms/store-mock {:exists? (constantly true)
+  (let [lock (component/start (lock/map->Lock {}))
+        store (ms/store-mock {:exists? (constantly true)
                               :get-resource (constantly "[]")
                               :save-resource (constantly nil)})
         comment-mng (ct/test-mng store)
         event-mng (event/map->EventManager {:s3 store
-                                            :lock (Object.)})
+                                            :lock lock})
         handler (h/map->Handler {:comment-manager comment-mng
                                  :event-manager event-mng
                                  :challenges {:c1 {:question "foo" :answer "bar"}}

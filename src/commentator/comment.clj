@@ -2,9 +2,9 @@
   (:require [cheshire.core :as json]
             [clojure.spec.alpha :as s]
             [clojure.string :as string]
-            [com.stuartsierra.component :as component]
             [corbihttp.log :as log]
             [commentator.cache :as c]
+            [commentator.lock :as lock]
             [commentator.spec :as spec]
             [commentator.store :as store]
             [exoscale.coax :as coax]
@@ -102,14 +102,14 @@
                "Delete comments for %s/%s"
                website
                article)
-    (locking lock
+    (locking (lock/get-lock lock (str website "/" article))
       (when (article-exists? this website article)
         (c/evict cache website article)
         (store/delete-resource s3 website (article-file-name article)))))
 
   (add-comment [this website article comment]
     (allowed? allowed-articles website article)
-    (locking lock
+    (locking (lock/get-lock lock (str website "/" article))
       (if (article-exists? this website article)
         (let [comments (for-article this website article true)]
           (log/infof {}
@@ -135,7 +135,7 @@
               (format "New comment %s for article %s" (:id comment) article)))
 
   (approve-comment [this website article comment-id]
-    (locking lock
+    (locking (lock/get-lock lock (str website "/" article))
       (if (article-exists? this website article)
         (let [{:keys [found comments]}
               (->> (for-article this website article true)
@@ -168,7 +168,7 @@
                             :comment-id comment-id})))))
 
   (delete-comment [this website article comment-id]
-    (locking lock
+    (locking (lock/get-lock lock (str website "/" article))
       (if (article-exists? this website article)
         (let [comments (for-article this website article true)
               filtered (remove #(= (:id %) comment-id) comments)]
@@ -215,9 +215,4 @@
                                  article)
                          [::not-found [:corbi/user ::ex/not-found]]
                          {:article article
-                          :comment-id comment-id}))))
-  component/Lifecycle
-  (start [this]
-    (assoc this :lock (Object.)))
-  (stop [this]
-    (assoc this :lock false)))
+                          :comment-id comment-id})))))

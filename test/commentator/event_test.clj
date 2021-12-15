@@ -3,6 +3,8 @@
             [clojure.test :refer :all]
             [commentator.event :as event]
             [commentator.mock.s3 :as ms]
+            [commentator.lock :as lock]
+            [com.stuartsierra.component :as component]
             [spy.assert :as assert]
             [spy.protocol :as protocol])
   (:import java.util.UUID))
@@ -24,7 +26,7 @@
           store (ms/store-mock {:get-resource (constantly (js events))
                                 :exists? (constantly true)})
           mng (event/map->EventManager {:s3 store
-                                        :lock (Object.)})]
+                                        :lock (component/start (lock/map->Lock {}))})]
       (is (= events (event/list-events mng website)))))
   (testing "No events"
     (let [store (ms/store-mock {:exists? (constantly false)})
@@ -46,7 +48,7 @@
                                 :save-resource (constantly true)
                                 :exists? (constantly true)})
           mng (event/map->EventManager {:s3 store
-                                        :lock (Object.)})]
+                                        :lock (component/start (lock/map->Lock {}))})]
       (event/add-event mng website event)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
@@ -60,7 +62,7 @@
                  :timestamp (System/currentTimeMillis)
                  :type :new-comment}
           mng (event/map->EventManager {:s3 store
-                                        :lock (Object.)})]
+                                        :lock (component/start (lock/map->Lock {}))})]
       (event/add-event mng website event)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
@@ -81,7 +83,7 @@
                                 :save-resource (constantly true)
                                 :exists? (constantly true)})
           mng (event/map->EventManager {:s3 store
-                                        :lock (Object.)})]
+                                        :lock (component/start (lock/map->Lock {}))})]
       (event/delete-event mng website id)
       (assert/called-with? (:save-resource (protocol/spies store))
                            store
@@ -92,7 +94,7 @@
     (let [id (UUID/randomUUID)
           store (ms/store-mock {:exists? (constantly false)})
           mng (event/map->EventManager {:s3 store
-                                        :lock (Object.)})]
+                                        :lock (component/start (lock/map->Lock {}))})]
       (is (thrown-with-msg?
            Exception
            #"not found"
@@ -108,7 +110,7 @@
           store (ms/store-mock {:get-resource (constantly (js events))
                                 :exists? (constantly false)})
           mng (event/map->EventManager {:s3 store
-                                        :lock (Object.)})]
+                                        :lock (component/start (lock/map->Lock {}))})]
       (is (thrown-with-msg?
            Exception
            #"not found"

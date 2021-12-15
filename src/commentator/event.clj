@@ -1,8 +1,8 @@
 (ns commentator.event
   (:require [clojure.spec.alpha :as s]
             [cheshire.core :as json]
-            [com.stuartsierra.component :as component]
             [corbihttp.log :as log]
+            [commentator.lock :as lock]
             [commentator.store :as store]
             [exoscale.coax :as coax]
             [exoscale.ex :as ex])
@@ -35,7 +35,7 @@
 (defrecord EventManager [s3 lock]
   IEventManager
   (add-event [this website event]
-    (locking lock
+    (locking (lock/get-lock lock website)
       (let [events (list-events this website)]
         (store/save-resource s3
                              website
@@ -46,7 +46,7 @@
                    :event-type (:type event)}
                   (format "publish event %s" (:id event)))
         true)))
-  (list-events [this website]
+  (list-events [_ website]
     (if (store/exists? s3 website event-file-name)
       (coax/coerce
        ::events
@@ -55,7 +55,7 @@
            vec))
       []))
   (delete-event [this website event-id]
-    (locking lock
+    (locking (lock/get-lock lock website)
       (if (store/exists? s3 website event-file-name)
         (let [events (list-events this website)
               filtered (remove #(= (:id %) event-id) events)]
@@ -74,9 +74,4 @@
         (throw (ex/ex-info (format "Event %s not found"
                                    event-id)
                            [::not-found [:corbi/user ::ex/not-found]]
-                           {:event-id event-id})))))
-  component/Lifecycle
-  (start [this]
-    (assoc this :lock (Object.)))
-  (stop [this]
-    (assoc this :lock false)))
+                           {:event-id event-id}))))))
