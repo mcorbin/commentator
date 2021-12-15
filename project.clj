@@ -1,5 +1,5 @@
 (defproject commentator "0.10.0"
-  :description "A Free commenting server"
+  :description "A Free commenting system"
   :url "https://github.com/mcorbin/commentator"
   :license {:name "EPL-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
