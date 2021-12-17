@@ -19,7 +19,8 @@
                  (:remote-addr request))
           cache-key (str website "-" ip)]
       (if (c/has? ttl-cache cache-key)
-        (throw (ex/ex-forbidden "You are rate limited, please wait"
-                                {}))
+        (throw (ex/ex-info "You are rate limited, please wait"
+                           [::rate-limited [:corbi/user ::ex/forbidden]]
+                           {}))
         (do (c/miss ttl-cache cache-key true)
             true)))))
