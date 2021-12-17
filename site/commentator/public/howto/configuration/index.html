@@ -12,22 +12,22 @@
     <title>Configuration :: Commentator</title>
 
     
-    <link href="/css/nucleus.css?1636282832" rel="stylesheet">
-    <link href="/css/fontawesome-all.min.css?1636282832" rel="stylesheet">
-    <link href="/css/hybrid.css?1636282832" rel="stylesheet">
-    <link href="/css/featherlight.min.css?1636282832" rel="stylesheet">
-    <link href="/css/perfect-scrollbar.min.css?1636282832" rel="stylesheet">
-    <link href="/css/auto-complete.css?1636282832" rel="stylesheet">
-    <link href="/css/atom-one-dark-reasonable.css?1636282832" rel="stylesheet">
-    <link href="/css/theme.css?1636282832" rel="stylesheet">
-    <link href="/css/tabs.css?1636282832" rel="stylesheet">
-    <link href="/css/hugo-theme.css?1636282832" rel="stylesheet">
+    <link href="/css/nucleus.css?1639742914" rel="stylesheet">
+    <link href="/css/fontawesome-all.min.css?1639742914" rel="stylesheet">
+    <link href="/css/hybrid.css?1639742914" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1639742914" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1639742914" rel="stylesheet">
+    <link href="/css/auto-complete.css?1639742914" rel="stylesheet">
+    <link href="/css/atom-one-dark-reasonable.css?1639742914" rel="stylesheet">
+    <link href="/css/theme.css?1639742914" rel="stylesheet">
+    <link href="/css/tabs.css?1639742914" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1639742914" rel="stylesheet">
     
-    <link href="/css/theme-commentator.css?1636282832" rel="stylesheet">
+    <link href="/css/theme-commentator.css?1639742914" rel="stylesheet">
     
     
 
-    <script src="/js/jquery-3.3.1.min.js?1636282832"></script>
+    <script src="/js/jquery-3.3.1.min.js?1639742914"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -60,14 +60,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/js/lunr.min.js?1636282832"></script>
-<script type="text/javascript" src="/js/auto-complete.js?1636282832"></script>
+<script type="text/javascript" src="/js/lunr.min.js?1639742914"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1639742914"></script>
 <script type="text/javascript">
     
         var baseurl = "https:\/\/www.commentator.mcorbin.fr";
     
 </script>
-<script type="text/javascript" src="/js/search.js?1636282832"></script>
+<script type="text/javascript" src="/js/search.js?1639742914"></script>
 
     
   </div>
@@ -483,15 +483,15 @@ Here is a commented example configuration file:</p>
  <span style="color:#75715e">;; parameters are path to the cert files)</span>
  <span style="color:#e6db74">:prometheus</span> {<span style="color:#e6db74">:host</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>
               <span style="color:#e6db74">:port</span> <span style="color:#ae81ff">8788</span>}
- <span style="color:#75715e">;; A list of challenges to avoid spammers</span>
- <span style="color:#e6db74">:challenges</span> {<span style="color:#e6db74">:c1</span> {<span style="color:#e6db74">:question</span> <span style="color:#e6db74">&#34;1 + 4 = ?&#34;</span>
-                   <span style="color:#e6db74">:answer</span> <span style="color:#e6db74">&#34;5&#34;</span>}
-              <span style="color:#e6db74">:c2</span> {<span style="color:#e6db74">:question</span> <span style="color:#e6db74">&#34;1 + 9 = ?&#34;</span>
-                   <span style="color:#e6db74">:answer</span> <span style="color:#e6db74">&#34;10&#34;</span>}}}
+ <span style="color:#75715e">;; Challenges configurations to avoid spammers</span>
+ <span style="color:#75715e">;; See the different modes to configure challenges on https://www.commentator.mcorbin.fr/howto/use-it/</span>
+ <span style="color:#e6db74">:challenges</span> {<span style="color:#e6db74">:type</span> <span style="color:#e6db74">:math</span>
+              <span style="color:#e6db74">:ttl</span> <span style="color:#ae81ff">120</span>
+              <span style="color:#e6db74">:secret</span> <span style="color:#f92672">#</span>secret <span style="color:#e6db74">&#34;azizjiuzarhuaizhaiuzr&#34;</span>}}
 </code></pre></div><p>Commentator can be used to store comments for multiple websites.</p>
 <p>The <code>:allowed-articles</code> key should contain the list of articles open for comments for each website. The website names and articles should match the ones used in the <a href="/api/comments/">API</a>. You can also check the <a href="/howto/use-it/">use it</a> section of the documentation for more information about this.</p>
 <p>Each website will have a dedicated bucket to store its comments and events.</p>
-<p>The bucket name will be <code>&lt;bucket-prefix&gt;&lt;sebsite-name&gt;</code>. The bucket prefix should be a string between 1 and 19 characters, and the website a string between 1 and 39 characters. Allowed characters are letters (both uppercase and lowercase), number, <code>_</code> and <code>-</code>.</p>
+<p>The bucket name will be <code>&lt;bucket-prefix&gt;&lt;website-name&gt;</code>. The bucket prefix should be a string between 1 and 19 characters, and the website a string between 1 and 39 characters. Allowed characters are letters (both uppercase and lowercase), number, <code>_</code> and <code>-</code>.</p>
 
 
 
@@ -705,19 +705,19 @@ Here is a commented example configuration file:</p>
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/js/clipboard.min.js?1636282832"></script>
-    <script src="/js/perfect-scrollbar.min.js?1636282832"></script>
-    <script src="/js/perfect-scrollbar.jquery.min.js?1636282832"></script>
-    <script src="/js/jquery.sticky.js?1636282832"></script>
-    <script src="/js/featherlight.min.js?1636282832"></script>
-    <script src="/js/highlight.pack.js?1636282832"></script>
+    <script src="/js/clipboard.min.js?1639742914"></script>
+    <script src="/js/perfect-scrollbar.min.js?1639742914"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1639742914"></script>
+    <script src="/js/jquery.sticky.js?1639742914"></script>
+    <script src="/js/featherlight.min.js?1639742914"></script>
+    <script src="/js/highlight.pack.js?1639742914"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/js/modernizr.custom-3.6.0.js?1636282832"></script>
-    <script src="/js/learn.js?1636282832"></script>
-    <script src="/js/hugo-learn.js?1636282832"></script>
+    <script src="/js/modernizr.custom-3.6.0.js?1639742914"></script>
+    <script src="/js/learn.js?1639742914"></script>
+    <script src="/js/hugo-learn.js?1639742914"></script>
     
         
-            <script src="/mermaid/mermaid.js?1636282832"></script>
+            <script src="/mermaid/mermaid.js?1639742914"></script>
         
         <script>
             mermaid.initialize({ startOnLoad: true });

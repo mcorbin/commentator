@@ -2,16 +2,19 @@
   (:require [cheshire.core :as json]
             [clojure.test :refer :all]
             [com.stuartsierra.component :as component]
+            [commentator.challenge :as challenge]
             [commentator.comment-test :as ct]
             [commentator.event :as event]
             [commentator.handler :as h]
             [commentator.mock.s3 :as ms]
             [commentator.lock :as lock]
             [commentator.rate-limit :as rl]
+            [exoscale.cloak :as cloak]
             [spy.assert :as assert]
             [spy.core :as spy]
             [spy.protocol :as protocol])
-  (:import java.util.UUID))
+  (:import commentator.challenge.ChallengeManager
+           java.util.UUID))
 
 (def website "mcorbin")
 
@@ -32,17 +35,25 @@
                               :get-resource (constantly "[]")
                               :save-resource (constantly nil)})
         comment-mng (ct/test-mng store)
+        challenge-mng (ChallengeManager. {:type :questions
+                                          :ttl 120
+                                          :secret (cloak/mask "aezez")
+                                          :questions [{:question "foo" :answer "bar"}]})
         event-mng (event/map->EventManager {:s3 store
                                             :lock lock})
+        timestamp (System/currentTimeMillis)
+        signature (-> (challenge/random-challenge challenge-mng website "foo")
+                      :signature)
         handler (h/map->Handler {:comment-manager comment-mng
                                  :event-manager event-mng
-                                 :challenges {:c1 {:question "foo" :answer "bar"}}
+                                 :challenge-manager challenge-mng
                                  :rate-limiter (component/start (rl/map->SimpleRateLimiter {:rate-limit-minutes 1}))})]
     (let [response (h/new-comment handler {:all-params {:content "content"
                                                         :website website
                                                         :author "mcorbin"
-                                                        :challenge :c1
                                                         :answer "bar"
+                                                        :signature signature
+                                                        :timestamp timestamp
                                                         :article "foo"}})]
       (is (= {:status 201
               :body {:message "Comment added"}}

@@ -3,6 +3,7 @@
             [commentator.cache :as c]
             [commentator.comment :as comment]
             [commentator.config :as config]
+            commentator.challenge
             [commentator.event :as event]
             [commentator.handler :as handler]
             [commentator.chain :as chain]
@@ -14,6 +15,7 @@
             [corbihttp.metric :as metric]
             [signal.handler :refer [with-handler]]
             [unilog.config :refer [start-logging!]])
+  (:import commentator.challenge.ChallengeManager)
   (:gen-class))
 
 (defonce ^:redef system
@@ -39,7 +41,9 @@
            prometheus
            rate-limit-minutes
            allow-origin]}]
-  (let [registry (metric/registry-component {})]
+  (let [registry (metric/registry-component {})
+        challenges (assoc challenges :key-spec
+                          true)]
     (component/system-map
      :lock (lock/map->Lock {})
      :registry registry
@@ -52,6 +56,7 @@
      :s3 (store/map->S3 {:credentials (dissoc store :bucket)
                          :bucket-prefix (:bucket-prefix store)})
      :rate-limiter (rate-limit/map->SimpleRateLimiter {:rate-limit-minutes rate-limit-minutes})
+     :challenge-manager (ChallengeManager. challenges)
      :event-manager (-> (event/map->EventManager {})
                         (component/using [:s3 :lock]))
      :comment-manager (-> (comment/map->CommentManager (allowed-articles-set
@@ -64,7 +69,7 @@
                    {})
      :cache (c/map->MemoryCache {})
      :api-handler (-> (handler/map->Handler {:challenges challenges})
-                      (component/using [:event-manager :comment-manager :rate-limiter])))))
+                      (component/using [:event-manager :comment-manager :challenge-manager :rate-limiter])))))
 
 (defn init-system
   "Initialize system, dropping the previous state."

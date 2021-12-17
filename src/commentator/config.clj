@@ -45,8 +45,17 @@
 
 (s/def ::question ::spec/non-empty-string)
 (s/def ::answer ::spec/non-empty-string)
-(s/def ::challenge (s/keys :req-un [::question ::answer]))
-(s/def ::challenges (s/map-of ::spec/keyword ::challenge))
+(s/def ::secret ::cloak/secret)
+(s/def ::ttl pos-int?)
+
+(s/def ::question-challenge (s/keys :req-un [::question ::answer]))
+(s/def ::questions (s/coll-of ::question-challenge))
+
+(defmulti challengemm :type)
+(defmethod challengemm :questions [_] (s/keys :req-un [::questions ::ttl ::secret]))
+(defmethod challengemm :math [_] (s/keys :req-un [::ttl ::secret]))
+
+(s/def ::challenges (s/multi-spec challengemm :type))
 (s/def ::rate-limit-minutes pos-int?)
 
 (s/def ::prometheus ::http)

@@ -12,22 +12,22 @@
     <title>Use it :: Commentator</title>
 
     
-    <link href="/css/nucleus.css?1636282832" rel="stylesheet">
-    <link href="/css/fontawesome-all.min.css?1636282832" rel="stylesheet">
-    <link href="/css/hybrid.css?1636282832" rel="stylesheet">
-    <link href="/css/featherlight.min.css?1636282832" rel="stylesheet">
-    <link href="/css/perfect-scrollbar.min.css?1636282832" rel="stylesheet">
-    <link href="/css/auto-complete.css?1636282832" rel="stylesheet">
-    <link href="/css/atom-one-dark-reasonable.css?1636282832" rel="stylesheet">
-    <link href="/css/theme.css?1636282832" rel="stylesheet">
-    <link href="/css/tabs.css?1636282832" rel="stylesheet">
-    <link href="/css/hugo-theme.css?1636282832" rel="stylesheet">
+    <link href="/css/nucleus.css?1639742914" rel="stylesheet">
+    <link href="/css/fontawesome-all.min.css?1639742914" rel="stylesheet">
+    <link href="/css/hybrid.css?1639742914" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1639742914" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1639742914" rel="stylesheet">
+    <link href="/css/auto-complete.css?1639742914" rel="stylesheet">
+    <link href="/css/atom-one-dark-reasonable.css?1639742914" rel="stylesheet">
+    <link href="/css/theme.css?1639742914" rel="stylesheet">
+    <link href="/css/tabs.css?1639742914" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1639742914" rel="stylesheet">
     
-    <link href="/css/theme-commentator.css?1636282832" rel="stylesheet">
+    <link href="/css/theme-commentator.css?1639742914" rel="stylesheet">
     
     
 
-    <script src="/js/jquery-3.3.1.min.js?1636282832"></script>
+    <script src="/js/jquery-3.3.1.min.js?1639742914"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -60,14 +60,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/js/lunr.min.js?1636282832"></script>
-<script type="text/javascript" src="/js/auto-complete.js?1636282832"></script>
+<script type="text/javascript" src="/js/lunr.min.js?1639742914"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1639742914"></script>
 <script type="text/javascript">
     
         var baseurl = "https:\/\/www.commentator.mcorbin.fr";
     
 </script>
-<script type="text/javascript" src="/js/search.js?1636282832"></script>
+<script type="text/javascript" src="/js/search.js?1639742914"></script>
 
     
   </div>
@@ -416,6 +416,12 @@
     <div class="wrapper">
 <nav id="TableOfContents">
   <ul>
+    <li>
+      <ul>
+        <li><a href="#questions">questions</a></li>
+        <li><a href="#math">math</a></li>
+      </ul>
+    </li>
     <li><a href="#events">Events</a></li>
     <li><a href="#integration">Integration</a></li>
   </ul>
@@ -460,16 +466,38 @@ Let&rsquo;s say we want to store comments for the blog <code>mcorbin.fr</code> f
 </code></pre></div><p>With this setup, only requests to create comments on the <code>/api/v1/comment/&lt;website&gt;/&lt;article&gt;</code> path will be allowed, where the possible value for <code>&lt;website&gt;</code> is &ldquo;mcorbin-fr&rdquo; and the possible values for <code>&lt;article&gt;</code> are &ldquo;my-first-article&rdquo; and &ldquo;my-second-article&rdquo;.</p>
 <p>You can read the <a href="/api/comments/">API documentation</a> to understand how it works. It&rsquo;s important to keep in mind that the <code>allowed-articles</code> key should match how the API is used later to store and retrieve comments for articles.</p>
 <p><strong>Challenges</strong></p>
-<p>Commentator supports a basic challenge system to avoid spammers. It&rsquo;s not perfect (and I have some idea to greatly improve it in the future) but it already helps filtering bots.</p>
-<p>The <code>:challenges</code> key in the configuration map is a map containing for each challenge a question and a answer. For example:</p>
-<pre><code>{:c1 {:question &quot;1 + 4 = ?&quot;
-      :answer &quot;5&quot;}
- :c2 {:question &quot;1 + 9 = ?&quot;
-      :answer &quot;10&quot;}}
-</code></pre><p>We have here two challenges named <code>:c1</code> and <code>:c2</code>, with simple questions about mathematical operations. The questions and answers are totally free, it&rsquo;s up to you to choose what you want to ask.</p>
+<p>Commentator supports a basic challenge system to avoid spammers.</p>
+<p>Commentator provides an <a href="/api/comments/">API endpoint</a> to return a random challenge. This API endpoint can be used to integrate Commentator on your website. What is returned by the endpoint is a json payload containing:</p>
+<ul>
+<li>A <code>question</code>, a text containing a question</li>
+<li>A <code>timestamp</code></li>
+<li>A <code>signature</code></li>
+</ul>
+<p>When users want to create a comment, they should provide:</p>
+<ul>
+<li>The <code>timestamp</code> and the <code>signature</code> provided by the previous endpoint.</li>
+<li>An <code>answer</code> field containing the expected answer (case insensitive).</li>
+</ul>
+<p>The <code>:challenges</code> key in the configuration can be used to configure challenges. It currently supports two modes.</p>
+<h3 id="questions">questions</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">{<span style="color:#e6db74">:type</span> <span style="color:#e6db74">:questions</span>
+ <span style="color:#e6db74">:ttl</span> <span style="color:#ae81ff">120</span>
+ <span style="color:#e6db74">:secret</span> <span style="color:#f92672">#</span>secret <span style="color:#e6db74">&#34;azizjiuzarhuaizhaiuzr&#34;</span>
+ <span style="color:#e6db74">:questions</span> [{<span style="color:#e6db74">:question</span> <span style="color:#e6db74">&#34;1 + 4 = ?&#34;</span>
+              <span style="color:#e6db74">:answer</span> <span style="color:#e6db74">&#34;5&#34;</span>}
+             {<span style="color:#e6db74">:question</span> <span style="color:#e6db74">&#34;1 + 9 = ?&#34;</span>
+              <span style="color:#e6db74">:answer</span> <span style="color:#e6db74">&#34;10&#34;</span>}]}
+</code></pre></div><p>We have here two challenges with simple questions about mathematical operations. The questions and answers are totally free, it&rsquo;s up to you to choose what you want to ask.</p>
 <p>You can also easily generate a lot of challenges programmatically if you want to.</p>
-<p>When users want to create a comment, they should provide a challenge name and the correct answer. The case of the letters in the answer is not important, everything is compared after being converted to lower case.</p>
-<p>Commentator provides an <a href="/api/comments/">API endpoint</a> to return a random challenge (the name and its question). This API endpoint can be used to integrate Commentator on your website.</p>
+<p>When users want to create a comment, they should provide:</p>
+<p>challenge name and the correct answer. The case of the letters in the answer is not important, everything is compared after being converted to lower case.</p>
+<p>The TTL is the validity duration of the challenge.</p>
+<h3 id="math">math</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-clojure" data-lang="clojure">{<span style="color:#e6db74">:type</span> <span style="color:#e6db74">:math</span>
+ <span style="color:#e6db74">:ttl</span> <span style="color:#ae81ff">120</span>
+ <span style="color:#e6db74">:secret</span> <span style="color:#f92672">#</span>secret <span style="color:#e6db74">&#34;azizjiuzarhuaizhaiuzr&#34;</span>}
+</code></pre></div><p>This challenge will automatically generate simple mathematical challenges. It could for example return a <code>:question</code> containing <code>&quot;what is the result of: 10  +  6&quot;</code></p>
+<p>The user should, like in the <code>questions</code> challenge, provide the answer, timestamp and signature when creating a comment.</p>
 <p><strong>Store</strong></p>
 <p>You should put the store configuration (to access the S3 storage) in the <code>:store</code> key.</p>
 <p>The <code>:bucket-prefix</code> value will be used as prefix for the buckets storing the comments. For example, if <code>:bucket-prefix</code> is set to &ldquo;commentator-&rdquo;, the bucket will be &ldquo;commentator-mcorbin-fr&rdquo; for the <code>mcorbin-fr</code> website.</p>
@@ -693,19 +721,19 @@ Let&rsquo;s say we want to store comments for the blog <code>mcorbin.fr</code> f
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/js/clipboard.min.js?1636282832"></script>
-    <script src="/js/perfect-scrollbar.min.js?1636282832"></script>
-    <script src="/js/perfect-scrollbar.jquery.min.js?1636282832"></script>
-    <script src="/js/jquery.sticky.js?1636282832"></script>
-    <script src="/js/featherlight.min.js?1636282832"></script>
-    <script src="/js/highlight.pack.js?1636282832"></script>
+    <script src="/js/clipboard.min.js?1639742914"></script>
+    <script src="/js/perfect-scrollbar.min.js?1639742914"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1639742914"></script>
+    <script src="/js/jquery.sticky.js?1639742914"></script>
+    <script src="/js/featherlight.min.js?1639742914"></script>
+    <script src="/js/highlight.pack.js?1639742914"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/js/modernizr.custom-3.6.0.js?1636282832"></script>
-    <script src="/js/learn.js?1636282832"></script>
-    <script src="/js/hugo-learn.js?1636282832"></script>
+    <script src="/js/modernizr.custom-3.6.0.js?1639742914"></script>
+    <script src="/js/learn.js?1639742914"></script>
+    <script src="/js/hugo-learn.js?1639742914"></script>
     
         
-            <script src="/mermaid/mermaid.js?1636282832"></script>
+            <script src="/mermaid/mermaid.js?1639742914"></script>
         
         <script>
             mermaid.initialize({ startOnLoad: true });

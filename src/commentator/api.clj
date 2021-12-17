@@ -6,17 +6,19 @@
             [commentator.handler :as handler]
             [commentator.spec :as spec]))
 
-(s/def ::challenge ::spec/keyword)
 (s/def ::answer ::spec/non-empty-string)
 (s/def ::comment-id ::comment/id)
 (s/def ::article ::spec/non-empty-string)
+(s/def ::timestamp pos-int?)
+(s/def ::signature ::spec/non-empty-string)
 
 (s/def :comment/new (s/keys :req-un [::article
                                      ::comment/author
                                      ::comment/content
-                                     ::challenge
                                      ::config/website
-                                     ::answer]
+                                     ::answer
+                                     ::timestamp
+                                     ::signature]
                             :opt-un [::comment/author-website]))
 (s/def :comment/get (s/keys :req-un [::article
                                      ::config/website
@@ -27,6 +29,7 @@
 (s/def :comment/delete (s/keys :req-un [::article ::comment-id ::config/website]))
 (s/def :comment/delete-article (s/keys :req-un [::article ::config/website]))
 (s/def :comment/admin-for-article (s/keys :req-un [::article ::config/website]))
+(s/def :challenge/random (s/keys :req-un [::article ::config/website]))
 
 (s/def :event/delete (s/keys :req-un [::event/id ::config/website]))
 (s/def :event/list (s/keys :req-un [::config/website]))
@@ -60,8 +63,9 @@
                                :handler-fn handler/admin-for-article
                                :spec :comment/admin-for-article
                                :method :get}
-   :challenge/random {:path [#"api/v1/challenge/?"]
+   :challenge/random {:path [#"api/v1/challenge/" :website "/" :article #"/?"]
                       :handler-fn handler/random-challenge
+                      :spec :challenge/random
                       :method :get}
    :event/list {:path [#"api/admin/event/" :website #"/?"]
                 :method :get

@@ -16,13 +16,14 @@ disableToc: false
 | author    | string | The author's name |
 | author-website | string | The author's website (optional) |
 | content    | string | The comment content |
-| challenge | string | The challenge name |
+| signature | string | The challenge signature |
+| timestamp | string | The challenge timestamp |
 | answer    |  string | The challenge answer |
 
 ---
 
 ```
-curl -X POST --header "Content-Type: application/json" --data \ '{"author":"mcorbin", "author-website": "mcorbin.fr", "content":"My comment","challenge":"c1","answer":"5"}' http://localhost:8787/api/v1/comment/mcorbin-fr/foo
+curl -X POST --header "Content-Type: application/json" --data \ '{"author":"mcorbin", "author-website": "mcorbin.fr", "content":"My comment","challenge":"c1","answer":"5", "signature": "<sign>", "timestamp": 1639688441946}' http://localhost:8787/api/v1/comment/mcorbin-fr/foo
 
 {"message":"Comment added"}
 ```
@@ -51,13 +52,13 @@ curl  http://localhost:8787/api/v1/comment/mcorbin-fr/foo
 
 ## Get a random challenge
 
-- **GET** `/api/v1/challenge`
+- **GET** `/api/v1/challenge/<website/<article>`
 
 ---
 
 ```
-curl  http://localhost:8787/api/v1/challenge
-{"name":"c2","question":"1 + 9 = ?"}
+curl  http://localhost:8787/api/v1/challenge/mcorbin-fr/foo
+{"timestamp": 1629101319712,"question":"1 + 9 = ?", "signature": "<signature>"}
 ```
 
 # Admin API

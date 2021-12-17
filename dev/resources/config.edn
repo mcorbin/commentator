@@ -16,7 +16,10 @@
                        :org.apache.http "error"}}
  :prometheus {:host "127.0.0.1"
               :port 8788}
- :challenges {:c1 {:question "1 + 4 = ?"
-                   :answer "5"}
-              :c2 {:question "1 + 9 = ?"
-                   :answer "10"}}}
+ :challenges {:type :questions
+              :ttl 120
+              :questions [{:question "1 + 4 = ?"
+                           :answer "5"}
+                          {:question "1 + 9 = ?"
+                           :answer "10"}]
+              :secret #secret "aezaz"}}

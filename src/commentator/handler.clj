@@ -40,7 +40,7 @@
   [request]
   (get-in request [:all-params :id]))
 
-(defrecord Handler [comment-manager event-manager rate-limiter challenges]
+(defrecord Handler [comment-manager event-manager rate-limiter challenge-manager]
   IHandler
   (new-comment [_ request]
     (let [article (req->article request)
@@ -50,11 +50,16 @@
                               :approved false
                               :timestamp (System/currentTimeMillis)})
                       cc/sanitize)
-          challenge (:challenge params)
           answer (:answer params)
+          timestamp (:timestamp params)
+          signature (:signature params)
           website (:website params)]
       (ex/assert-spec-valid ::cc/comment comment)
-      (challenge/verify challenges challenge answer)
+      (challenge/verify challenge-manager {:answer answer
+                                           :signature signature
+                                           :timestamp timestamp
+                                           :website website
+                                           :article article})
       (rate-limit/validate rate-limiter request website)
       (cc/add-comment comment-manager website article comment)
       (future (try (ce/add-event event-manager
@@ -110,10 +115,11 @@
       {:status 200 :body {:message "Comment approved"}}))
 
   (random-challenge [_ request]
-    (let [challenge (challenge/random challenges)]
+    (let [website (req->website request)
+          article (req->article request)]
       {:status 200
-       :body {:name challenge
-              :question (get-in challenges [challenge :question])}}))
+       :body (challenge/random-challenge challenge-manager
+                                         website article)}))
 
   (list-events [_ request]
     (let [website (req->website request)]

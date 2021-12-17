@@ -38,24 +38,54 @@ You can read the [API documentation](/api/comments/) to understand how it works.
 
 **Challenges**
 
-Commentator supports a basic challenge system to avoid spammers. It's not perfect (and I have some idea to greatly improve it in the future) but it already helps filtering bots.
+Commentator supports a basic challenge system to avoid spammers.
 
-The `:challenges` key in the configuration map is a map containing for each challenge a question and a answer. For example:
+Commentator provides an [API endpoint](/api/comments/) to return a random challenge. This API endpoint can be used to integrate Commentator on your website. What is returned by the endpoint is a json payload containing:
 
+- A `question`, a text containing a question
+- A `timestamp`
+- A `signature`
+
+When users want to create a comment, they should provide:
+
+- The `timestamp` and the `signature` provided by the previous endpoint.
+- An `answer` field containing the expected answer (case insensitive).
+
+The `:challenges` key in the configuration can be used to configure challenges. It currently supports two modes.
+
+### questions
+
+```clojure
+{:type :questions
+ :ttl 120
+ :secret #secret "azizjiuzarhuaizhaiuzr"
+ :questions [{:question "1 + 4 = ?"
+              :answer "5"}
+             {:question "1 + 9 = ?"
+              :answer "10"}]}
 ```
-{:c1 {:question "1 + 4 = ?"
-      :answer "5"}
- :c2 {:question "1 + 9 = ?"
-      :answer "10"}}
-```
 
-We have here two challenges named `:c1` and `:c2`, with simple questions about mathematical operations. The questions and answers are totally free, it's up to you to choose what you want to ask.
+We have here two challenges with simple questions about mathematical operations. The questions and answers are totally free, it's up to you to choose what you want to ask.
 
 You can also easily generate a lot of challenges programmatically if you want to.
 
-When users want to create a comment, they should provide a challenge name and the correct answer. The case of the letters in the answer is not important, everything is compared after being converted to lower case.
+When users want to create a comment, they should provide:
 
-Commentator provides an [API endpoint](/api/comments/) to return a random challenge (the name and its question). This API endpoint can be used to integrate Commentator on your website.
+challenge name and the correct answer. The case of the letters in the answer is not important, everything is compared after being converted to lower case.
+
+The TTL is the validity duration of the challenge.
+
+### math
+
+```clojure
+{:type :math
+ :ttl 120
+ :secret #secret "azizjiuzarhuaizhaiuzr"}
+```
+
+This challenge will automatically generate simple mathematical challenges. It could for example return a `:question` containing `"what is the result of: 10  +  6"`
+
+The user should, like in the `questions` challenge, provide the answer, timestamp and signature when creating a comment.
 
 **Store**
 

@@ -51,11 +51,11 @@ Here is a commented example configuration file:
  ;; parameters are path to the cert files)
  :prometheus {:host "127.0.0.1"
               :port 8788}
- ;; A list of challenges to avoid spammers
- :challenges {:c1 {:question "1 + 4 = ?"
-                   :answer "5"}
-              :c2 {:question "1 + 9 = ?"
-                   :answer "10"}}}
+ ;; Challenges configurations to avoid spammers
+ ;; See the different modes to configure challenges on https://www.commentator.mcorbin.fr/howto/use-it/
+ :challenges {:type :math
+              :ttl 120
+              :secret #secret "azizjiuzarhuaizhaiuzr"}}
 ```
 
 Commentator can be used to store comments for multiple websites.
@@ -64,4 +64,4 @@ The `:allowed-articles` key should contain the list of articles open for comment
 
 Each website will have a dedicated bucket to store its comments and events.
 
-The bucket name will be `<bucket-prefix><sebsite-name>`. The bucket prefix should be a string between 1 and 19 characters, and the website a string between 1 and 39 characters. Allowed characters are letters (both uppercase and lowercase), number, `_` and `-`.
+The bucket name will be `<bucket-prefix><website-name>`. The bucket prefix should be a string between 1 and 19 characters, and the website a string between 1 and 39 characters. Allowed characters are letters (both uppercase and lowercase), number, `_` and `-`.
