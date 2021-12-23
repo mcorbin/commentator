@@ -1,4 +1,4 @@
-FROM clojure:openjdk-11-lein as build-env
+FROM clojure:openjdk-17-lein as build-env
 
 ADD . /app
 WORKDIR /app
@@ -7,7 +7,7 @@ RUN lein uberjar
 
 # -----------------------------------------------------------------------------
 
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM adoptopenjdk/openjdk17:alpine-jre
 
 RUN addgroup -S commentator && \
     adduser -s /bin/false -G commentator -S commentator
