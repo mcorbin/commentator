@@ -6,26 +6,26 @@
 (deftest auth-test
   (let [token (cloak/mask "my-super-token")]
     (is (map? (auth/auth-handler
-               {:handler :comment/delete
+               {:handler {:auth true}
                 :request {:headers {"authorization" "my-super-token"}}}
                token)))
     (is (map? (auth/auth-handler
-               {:handler :challenge/random
+               {:handler {:auth false}
                 :request {:headers {"authorization" "my-super-token"}}}
                token)))
     (is (map? (auth/auth-handler
-               {:handler :challenge/random}
+               {:handler {:auth false}}
                token)))
     (is (thrown-with-msg?
          Exception
          #"Forbidden"
          (auth/auth-handler
-          {:handler :comment/delete
+          {:handler {:auth true}
            :request {:headers {"authorization" "invalid token"}}}
           token)))
     (is (thrown-with-msg?
          Exception
          #"Forbidden"
          (auth/auth-handler
-          {:handler :comment/delete}
+          {:handler {:auth true}}
           token)))))

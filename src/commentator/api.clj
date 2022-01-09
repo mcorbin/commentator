@@ -34,47 +34,32 @@
 (s/def :event/delete (s/keys :req-un [::event/id ::config/website]))
 (s/def :event/list (s/keys :req-un [::config/website]))
 
-(def dispatch-map
-  {:comment/new {:path ["api/v1/comment/" :website "/":article #"/?"]
-                 :handler-fn handler/new-comment
-                 :spec :comment/new
-                 :method :post}
-   :comment/get {:path ["api/admin/comment/":website "/" :article "/" :comment-id #"/?"]
-                 :handler-fn handler/get-comment
-                 :spec :comment/get
-                 :method :get}
-   :comment/for-article {:path ["api/v1/comment/" :website "/" :article #"/?"]
-                         :spec :comment/for-article
-                         :method :get
-                         :handler-fn handler/comments-for-article}
-   :comment/approve {:path ["api/admin/comment/" :website "/" :article "/" :comment-id #"/?"]
-                     :handler-fn handler/approve-comment
-                     :spec :comment/approve
-                     :method :post}
-   :comment/delete {:path ["api/admin/comment/" :website "/" :article "/" :comment-id #"/?"]
-                    :method :delete
-                    :spec :comment/delete
-                    :handler-fn handler/delete-comment}
-   :comment/delete-article {:path ["api/admin/comment/" :website "/" :article #"/?"]
-                            :handler-fn handler/delete-article-comments
-                            :spec :comment/delete-article
-                            :method :delete}
-   :comment/admin-for-article {:path ["api/admin/comment/" :website "/" :article #"/?"]
-                               :handler-fn handler/admin-for-article
-                               :spec :comment/admin-for-article
-                               :method :get}
-   :challenge/random {:path [#"api/v1/challenge/" :website "/" :article #"/?"]
-                      :handler-fn handler/random-challenge
-                      :spec :challenge/random
-                      :method :get}
-   :event/list {:path [#"api/admin/event/" :website #"/?"]
-                :method :get
-                :spec :event/list
-                :handler-fn handler/list-events}
-   :event/delete {:path ["api/admin/event/" :website "/" :id #"/?"]
-                  :spec :event/delete
-                  :method :delete
-                  :handler-fn handler/delete-event}
-   :system/healthz {:path #"healthz/?"
-                    :method :get
-                    :handler-fn handler/healthz}})
+(def router
+  [["/api/v1/comment/:website/:article" {:post {:spec :comment/new
+                                                :handler handler/new-comment}
+                                         :get {:spec :comment/for-article
+                                               :handler handler/comments-for-article}}]
+   ["/api/admin/comment/:website/:article" {:get {:handler handler/admin-for-article
+                                                  :auth true
+                                                  :spec :comment/admin-for-article}
+                                            :delete {:spec :comment/delete-article
+                                                     :auth true
+                                                     :handler handler/delete-article-comments}}]
+   ["/api/admin/comment/:website/:article/:comment-id" {:get {:spec :comment/get
+                                                              :auth true
+                                                              :handler handler/get-comment}
+                                                        :delete {:spec :comment/delete
+                                                                 :auth true
+                                                                 :handler handler/delete-comment}
+                                                        :post {:spec :comment/approve
+                                                               :auth true
+                                                               :handler handler/approve-comment}}]
+   ["/api/v1/challenge/:website/:article" {:get {:handler handler/random-challenge
+                                                 :spec :challenge/random}}]
+   ["/api/admin/event/:website" {:get {:spec :event/list
+                                       :auth true
+                                       :handler handler/list-events}}]
+   ["/api/admin/event/:website/:id" {:delete {:spec :event/delete
+                                              :auth true
+                                              :handler handler/delete-event}}]
+   ["/healthz" {:get {:handler-fn handler/healthz}}]])

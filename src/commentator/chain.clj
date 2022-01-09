@@ -12,6 +12,7 @@
             [corbihttp.interceptor.handler :as itc-handler]
             [corbihttp.interceptor.response :as itc-response]))
 
+(def log {:enter (fn [ctx] (println (pr-str ctx))ctx)})
 (defn interceptor-chain
   [{:keys [token api-handler registry allow-origin]}]
   [itc-response/response ;;leave
@@ -20,16 +21,16 @@
    (itc-metric/response-metrics registry) ;; leave
    (itc-cors/cors allow-origin) ;; leave
    itc-error/error ;; error
-   (itc-route/route {:dispatch-map api/dispatch-map
+   (itc-route/route {:router api/router
                      :registry registry
                      :handler-component api-handler
                      :not-found-handler handler/not-found}) ;; enter
    (itc-auth/auth token)
+   log
    itc-id/request-id ;;enter
    itc-ring/cookies ;; enter + leave
    itc-ring/params ;; enter
    itc-ring/keyword-params ;; enter
    itc-json/request-params ;; enter
-   (itc-handler/main-handler {:dispatch-map api/dispatch-map
-                              :registry registry
+   (itc-handler/main-handler {:registry registry
                               :handler-component api-handler})])
