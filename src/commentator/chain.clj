@@ -12,7 +12,6 @@
             [corbihttp.interceptor.handler :as itc-handler]
             [corbihttp.interceptor.response :as itc-response]))
 
-(def log {:enter (fn [ctx] (println (pr-str ctx))ctx)})
 (defn interceptor-chain
   [{:keys [token api-handler registry allow-origin]}]
   [itc-response/response ;;leave
@@ -26,7 +25,6 @@
                      :handler-component api-handler
                      :not-found-handler handler/not-found}) ;; enter
    (itc-auth/auth token)
-   log
    itc-id/request-id ;;enter
    itc-ring/cookies ;; enter + leave
    itc-ring/params ;; enter
