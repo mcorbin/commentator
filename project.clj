@@ -9,7 +9,7 @@
                    com.amazonaws/amazon-kinesis-client]]
                  [com.amazonaws/aws-java-sdk-core "1.12.128"]
                  [com.amazonaws/aws-java-sdk-s3 "1.12.128"]
-                 [fr.mcorbin/corbihttp "0.24.0"]
+                 [fr.mcorbin/corbihttp "0.25.0"]
                  [org.clojure/clojure "1.10.3"]
                  [org.clojure/core.cache "1.0.225"]]
   :main ^:skip-aot commentator.core
