@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="generator" content="Hugo 0.80.0" />
+    <meta name="generator" content="Hugo 0.91.2" />
     <meta name="description" content="">
 
 
@@ -12,22 +12,22 @@
     <title>Comments :: Commentator</title>
 
     
-    <link href="/css/nucleus.css?1639742914" rel="stylesheet">
-    <link href="/css/fontawesome-all.min.css?1639742914" rel="stylesheet">
-    <link href="/css/hybrid.css?1639742914" rel="stylesheet">
-    <link href="/css/featherlight.min.css?1639742914" rel="stylesheet">
-    <link href="/css/perfect-scrollbar.min.css?1639742914" rel="stylesheet">
-    <link href="/css/auto-complete.css?1639742914" rel="stylesheet">
-    <link href="/css/atom-one-dark-reasonable.css?1639742914" rel="stylesheet">
-    <link href="/css/theme.css?1639742914" rel="stylesheet">
-    <link href="/css/tabs.css?1639742914" rel="stylesheet">
-    <link href="/css/hugo-theme.css?1639742914" rel="stylesheet">
+    <link href="/css/nucleus.css?1642108810" rel="stylesheet">
+    <link href="/css/fontawesome-all.min.css?1642108810" rel="stylesheet">
+    <link href="/css/hybrid.css?1642108810" rel="stylesheet">
+    <link href="/css/featherlight.min.css?1642108810" rel="stylesheet">
+    <link href="/css/perfect-scrollbar.min.css?1642108810" rel="stylesheet">
+    <link href="/css/auto-complete.css?1642108810" rel="stylesheet">
+    <link href="/css/atom-one-dark-reasonable.css?1642108810" rel="stylesheet">
+    <link href="/css/theme.css?1642108810" rel="stylesheet">
+    <link href="/css/tabs.css?1642108810" rel="stylesheet">
+    <link href="/css/hugo-theme.css?1642108810" rel="stylesheet">
     
-    <link href="/css/theme-commentator.css?1639742914" rel="stylesheet">
+    <link href="/css/theme-commentator.css?1642108810" rel="stylesheet">
     
     
 
-    <script src="/js/jquery-3.3.1.min.js?1639742914"></script>
+    <script src="/js/jquery-3.3.1.min.js?1642108810"></script>
 
     <style>
       :root #header + #content > #left > #rlblock_left{
@@ -60,14 +60,14 @@
     <span data-search-clear=""><i class="fas fa-times"></i></span>
 </div>
 
-<script type="text/javascript" src="/js/lunr.min.js?1639742914"></script>
-<script type="text/javascript" src="/js/auto-complete.js?1639742914"></script>
+<script type="text/javascript" src="/js/lunr.min.js?1642108810"></script>
+<script type="text/javascript" src="/js/auto-complete.js?1642108810"></script>
 <script type="text/javascript">
     
         var baseurl = "https:\/\/www.commentator.mcorbin.fr";
     
 </script>
-<script type="text/javascript" src="/js/search.js?1639742914"></script>
+<script type="text/javascript" src="/js/search.js?1642108810"></script>
 
     
   </div>
@@ -499,7 +499,7 @@
 </tbody>
 </table>
 <hr>
-<pre><code>curl -X POST --header &quot;Content-Type: application/json&quot; --data \ '{&quot;author&quot;:&quot;mcorbin&quot;, &quot;author-website&quot;: &quot;mcorbin.fr&quot;, &quot;content&quot;:&quot;My comment&quot;,&quot;challenge&quot;:&quot;c1&quot;,&quot;answer&quot;:&quot;5&quot;, &quot;signature&quot;: &quot;&lt;sign&gt;&quot;, &quot;timestamp&quot;: 1639688441946}' http://localhost:8787/api/v1/comment/mcorbin-fr/foo
+<pre tabindex="0"><code>curl -X POST --header &quot;Content-Type: application/json&quot; --data \ '{&quot;author&quot;:&quot;mcorbin&quot;, &quot;author-website&quot;: &quot;mcorbin.fr&quot;, &quot;content&quot;:&quot;My comment&quot;,&quot;challenge&quot;:&quot;c1&quot;,&quot;answer&quot;:&quot;5&quot;, &quot;signature&quot;: &quot;&lt;sign&gt;&quot;, &quot;timestamp&quot;: 1639688441946}' http://localhost:8787/api/v1/comment/mcorbin-fr/foo
 
 {&quot;message&quot;:&quot;Comment added&quot;}
 </code></pre><h2 id="list-comments-for-an-article">List comments for an article</h2>
@@ -507,7 +507,7 @@
 <li><strong>GET</strong> <code>/api/v1/comment/&lt;website&gt;/&lt;article&gt;</code></li>
 </ul>
 <hr>
-<pre><code>curl  http://localhost:8787/api/v1/comment/mcorbin-fr/foo
+<pre tabindex="0"><code>curl  http://localhost:8787/api/v1/comment/mcorbin-fr/foo
 
 [
   {
@@ -525,7 +525,7 @@
 <li><strong>GET</strong> <code>/api/v1/challenge/&lt;website/&lt;article&gt;</code></li>
 </ul>
 <hr>
-<pre><code>curl  http://localhost:8787/api/v1/challenge/mcorbin-fr/foo
+<pre tabindex="0"><code>curl  http://localhost:8787/api/v1/challenge/mcorbin-fr/foo
 {&quot;timestamp&quot;: 1629101319712,&quot;question&quot;:&quot;1 + 9 = ?&quot;, &quot;signature&quot;: &quot;&lt;signature&gt;&quot;}
 </code></pre><h1 id="admin-api">Admin API</h1>
 <h2 id="get-a-comment">Get a comment</h2>
@@ -533,7 +533,7 @@
 <li><strong>GET</strong> <code>/api/admin/comment/&lt;website&gt;/&lt;article&gt;/&lt;comment-id&gt;</code></li>
 </ul>
 <hr>
-<pre><code>curl -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo/0bfe788b-3a06-47fe-8a75-4a3ec6a3b8d9
+<pre tabindex="0"><code>curl -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo/0bfe788b-3a06-47fe-8a75-4a3ec6a3b8d9
 
 {
   &quot;content&quot;: &quot;My comment&quot;,
@@ -548,7 +548,7 @@
 <li><strong>GET</strong> <code>/api/admin/comment/&lt;website&gt;/&lt;article&gt;</code></li>
 </ul>
 <hr>
-<pre><code>curl -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo
+<pre tabindex="0"><code>curl -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo
 [
   {
     &quot;content&quot;: &quot;My comment&quot;,
@@ -564,7 +564,7 @@
 <li><strong>POST</strong> <code>/api/admin/comment/&lt;website&gt;/&lt;article&gt;/&lt;comment-id&gt;</code></li>
 </ul>
 <hr>
-<pre><code>curl -X POST -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo/0bfe788b-3a06-47fe-8a75-4a3ec6a3b8d9
+<pre tabindex="0"><code>curl -X POST -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo/0bfe788b-3a06-47fe-8a75-4a3ec6a3b8d9
 
 {
   &quot;message&quot;: &quot;Comment approved&quot;
@@ -574,7 +574,7 @@
 <li><strong>DELETE</strong> <code>/api/admin/comment/&lt;website&gt;/&lt;article&gt;/&lt;comment-id&gt;</code></li>
 </ul>
 <hr>
-<pre><code>curl -X DELETE -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo/0bfe788b-3a06-47fe-8a75-4a3ec6a3b8d9
+<pre tabindex="0"><code>curl -X DELETE -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo/0bfe788b-3a06-47fe-8a75-4a3ec6a3b8d9
 
 {
   &quot;message&quot;:&quot;Comment deleted&quot;
@@ -584,7 +584,7 @@
 <li><strong>DELETE</strong> <code>/api/admin/comment/&lt;website&gt;/&lt;article&gt;</code></li>
 </ul>
 <hr>
-<pre><code>curl -X DELETE -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo
+<pre tabindex="0"><code>curl -X DELETE -H &quot;Authorization: my-super-token&quot; http://localhost:8787/api/admin/comment/mcorbin-fr/foo
 
 {
   &quot;message&quot;:&quot;Comments deleted&quot;
@@ -802,19 +802,19 @@
     <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
       <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
     </div>
-    <script src="/js/clipboard.min.js?1639742914"></script>
-    <script src="/js/perfect-scrollbar.min.js?1639742914"></script>
-    <script src="/js/perfect-scrollbar.jquery.min.js?1639742914"></script>
-    <script src="/js/jquery.sticky.js?1639742914"></script>
-    <script src="/js/featherlight.min.js?1639742914"></script>
-    <script src="/js/highlight.pack.js?1639742914"></script>
+    <script src="/js/clipboard.min.js?1642108810"></script>
+    <script src="/js/perfect-scrollbar.min.js?1642108810"></script>
+    <script src="/js/perfect-scrollbar.jquery.min.js?1642108810"></script>
+    <script src="/js/jquery.sticky.js?1642108810"></script>
+    <script src="/js/featherlight.min.js?1642108810"></script>
+    <script src="/js/highlight.pack.js?1642108810"></script>
     <script>hljs.initHighlightingOnLoad();</script>
-    <script src="/js/modernizr.custom-3.6.0.js?1639742914"></script>
-    <script src="/js/learn.js?1639742914"></script>
-    <script src="/js/hugo-learn.js?1639742914"></script>
+    <script src="/js/modernizr.custom-3.6.0.js?1642108810"></script>
+    <script src="/js/learn.js?1642108810"></script>
+    <script src="/js/hugo-learn.js?1642108810"></script>
     
         
-            <script src="/mermaid/mermaid.js?1639742914"></script>
+            <script src="/mermaid/mermaid.js?1642108810"></script>
         
         <script>
             mermaid.initialize({ startOnLoad: true });

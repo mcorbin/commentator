@@ -1,53 +1,29 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
   <url>
     <loc>https://www.commentator.mcorbin.fr/api/comments/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/api/events/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/howto/get-build/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/howto/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/howto/configuration/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/api/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/api/monitoring/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/support/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/howto/use-it/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/categories/</loc>
-  </url>
-  
-  <url>
+  </url><url>
     <loc>https://www.commentator.mcorbin.fr/tags/</loc>
   </url>
-  
 </urlset>

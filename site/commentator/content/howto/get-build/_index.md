@@ -6,7 +6,7 @@ disableToc: false
 
 ## Get Commentator jar file
 
-You can download the Commentator jar from [Github](https://github.com/mcorbin/commentator/releases). Commentator is tested under Java 11 (LTS).
+You can download the Commentator jar from [Github](https://github.com/mcorbin/commentator/releases). Commentator is tested under Java 17 (LTS).
 
 You can also build Commentator yourself. You will need to do that:
 
