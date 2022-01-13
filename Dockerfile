@@ -7,10 +7,9 @@ RUN lein uberjar
 
 # -----------------------------------------------------------------------------
 
-FROM adoptopenjdk/openjdk17:alpine-jre
+FROM eclipse-temurin:17
 
-RUN addgroup -S commentator && \
-    adduser -s /bin/false -G commentator -S commentator
+RUN groupadd -r commentator && useradd -r -s /bin/false -g commentator commentator
 
 RUN mkdir /app
 COPY --from=build-env --chown=commentator:commentator /app/target/uberjar/commentator-*-standalone.jar /app/commentator.jar
