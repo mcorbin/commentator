@@ -62,4 +62,4 @@
    ["/api/admin/event/:website/:id" {:delete {:spec :event/delete
                                               :auth true
                                               :handler handler/delete-event}}]
-   ["/healthz" {:get {:handler-fn handler/healthz}}]])
+   ["/healthz" {:get {:handler handler/healthz}}]])
