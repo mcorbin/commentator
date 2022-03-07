@@ -64,7 +64,8 @@
       (cc/add-comment comment-manager website article comment)
       (future (try (ce/add-event event-manager
                                  website
-                                 (ce/new-comment article
+                                 (ce/new-comment website
+                                                 article
                                                  (:id comment)))
                    (catch Exception e
                      (log/error (log/req-ctx request)

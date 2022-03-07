@@ -13,18 +13,21 @@
 (s/def ::type #{:new-comment})
 (s/def ::timestamp pos-int?)
 (s/def ::id uuid?)
+(s/def ::comment-id uuid?)
 
-(s/def ::event (s/keys :req-un [::type ::timestamp ::id]))
+(s/def ::event (s/keys :req-un [::type ::timestamp ::id ::comment-id]))
 (s/def ::events (s/coll-of ::event))
 
 (defn new-comment
   "Generates an event for a new comment"
-  [article id]
+  [website article id]
   {:timestamp (System/currentTimeMillis)
    :id (UUID/randomUUID)
    :article article
+   :website website
    :message (format "New comment %s on article %s" id article)
    :comment-id id
+   :approve-url (format "/api/admin/comment/%s/%s/%s" website article id)
    :type :new-comment})
 
 (defprotocol IEventManager
