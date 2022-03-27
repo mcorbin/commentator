@@ -71,7 +71,7 @@
 
 (defrecord CommentManager [auto-approve allowed-articles s3 lock cache]
   ICommentManager
-  (article-exists? [this website article]
+  (article-exists? [_ website article]
     (store/exists? s3 website (article-file-name article)))
 
   (for-article [this website article]

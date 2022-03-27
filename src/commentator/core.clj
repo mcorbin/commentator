@@ -10,6 +10,7 @@
             [commentator.lock :as lock]
             [commentator.rate-limit :as rate-limit]
             [commentator.store :as store]
+            [commentator.usage :as usage]
             [corbihttp.http :as corbihttp]
             [corbihttp.log :as log]
             [corbihttp.metric :as metric]
@@ -68,8 +69,12 @@
                                            :chain-builder metric/prom-chain-builder})
                    {})
      :cache (c/map->MemoryCache {})
+     :usage-component (-> (usage/map->WebsiteUsage {:websites (-> comment
+                                                                  :allowed-articles
+                                                                  keys)})
+                          (component/using [:s3]))
      :api-handler (-> (handler/map->Handler {:challenges challenges})
-                      (component/using [:event-manager :comment-manager :challenge-manager :rate-limiter])))))
+                      (component/using [:event-manager :comment-manager :challenge-manager :rate-limiter :usage-component])))))
 
 (defn init-system
   "Initialize system, dropping the previous state."

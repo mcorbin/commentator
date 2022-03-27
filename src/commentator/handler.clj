@@ -4,6 +4,7 @@
   (:require [commentator.event :as ce]
             [commentator.challenge :as challenge]
             [commentator.comment :as cc]
+            [commentator.usage :as usage]
             [corbihttp.log :as log]
             [commentator.rate-limit :as rate-limit]
             [exoscale.ex :as ex])
@@ -19,6 +20,7 @@
   (approve-comment [this request] "Approve a comment")
   (random-challenge [this request] "get a random challenge")
   (list-events [this request] "List all events")
+  (usage [this request] "Usage request")
   (delete-event [this request] "Delete a specific event")
   (healthz [this request] "Healthz endpoint")
   (metrics [this request] "Metric endpoint")
@@ -40,7 +42,7 @@
   [request]
   (get-in request [:all-params :id]))
 
-(defrecord Handler [comment-manager event-manager rate-limiter challenge-manager]
+(defrecord Handler [comment-manager event-manager rate-limiter challenge-manager usage-component]
   IHandler
   (new-comment [_ request]
     (let [article (req->article request)
@@ -107,6 +109,10 @@
           website (req->website request)]
       (cc/delete-article comment-manager website article)
       {:status 200 :body {:message "Comments deleted"}}))
+
+  (usage [_ request]
+    (usage/new-request usage-component request)
+    {:status 200 :body {:message "ok"}})
 
   (approve-comment [_ request]
     (let [article (req->article request)

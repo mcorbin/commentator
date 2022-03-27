@@ -12,6 +12,10 @@
 (s/def ::timestamp pos-int?)
 (s/def ::signature ::spec/non-empty-string)
 
+(s/def ::path ::spec/non-empty-string)
+(s/def :usage/add (s/keys :req-un [::config/website
+                                   ::path]))
+
 (s/def :comment/new (s/keys :req-un [::article
                                      ::comment/author
                                      ::comment/content
@@ -39,6 +43,8 @@
                                                 :handler handler/new-comment}
                                          :get {:spec :comment/for-article
                                                :handler handler/comments-for-article}}]
+   ["/api/v1/usage/:website" {:post {:spec :usage/add
+                                     :handler handler/usage}}]
    ["/api/admin/comment/:website/:article" {:get {:handler handler/admin-for-article
                                                   :auth true
                                                   :spec :comment/admin-for-article}
