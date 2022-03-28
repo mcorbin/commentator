@@ -59,6 +59,7 @@
 
 (defn purge-cache
   [cache]
+  (log/info {} "purge usage cache")
   (try
     (->> (map (fn [[website website-cache]]
                 [website (select-keys website-cache [(now)])])
@@ -82,8 +83,8 @@
                                TimeUnit/SECONDS)
       (.scheduleWithFixedDelay executor
                                ^Runnable (fn []
-                                           (purge-cache c))
-                               120
+                                           (swap! c purge-cache))
+                               60
                                14400
                                TimeUnit/SECONDS)
       (assoc this :cache c :executor executor)))
@@ -93,7 +94,9 @@
       (.shutdown executor)
       (.awaitTermination executor
                          20
-                         TimeUnit/SECONDS))
+                         TimeUnit/SECONDS)
+      ;; sync one last time
+      (sync-cache cache s3))
     (assoc this :cache nil :executor nil))
   IWebsiteUsage
   (new-request [_ request]
