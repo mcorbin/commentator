@@ -20,7 +20,7 @@
                         bucket
                         resource-name))
 
-(defn get-resource-from-3
+(defn get-resource-from-s3
   "Get a file from s3."
   [credentials bucket resource-name]
   (String.
@@ -57,18 +57,18 @@
 
 (defrecord S3 [credentials bucket-prefix]
   IStoreOperator
-  (exists? [this website resource-name]
+  (exists? [_ website resource-name]
     (exists?-s3 credentials (bucket-name bucket-prefix website) resource-name))
-  (get-resource [this website resource-name]
-    (get-resource-from-3 credentials
+  (get-resource [_ website resource-name]
+    (get-resource-from-s3 credentials
                          (bucket-name bucket-prefix website)
                          resource-name))
-  (save-resource [this website resource-name content]
+  (save-resource [_ website resource-name content]
     (save-on-s3 credentials
                 (bucket-name bucket-prefix website)
                 resource-name
                 content))
-  (delete-resource [this website resource-name]
+  (delete-resource [_ website resource-name]
     (delete-resource-from-s3 credentials
                              (bucket-name bucket-prefix website)
                              resource-name)))
