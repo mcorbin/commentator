@@ -70,3 +70,25 @@
                          (usage/resource-name now)
                          (json/generate-string {"/foo" {"10.0.0.1" 1
                                                         "10.0.0.2" 1}}))))
+(deftest compute-usage-for-day-test
+  (is (= {:pages {"/foo" {:unique 3
+                          :total 20}}
+          :unique 3
+          :total 20}
+         (usage/compute-usage-for-day {"/foo" {"10.0.0.1" 3
+                                               "10.2.2.3" 15
+                                               "10.2.2.4" 2}})))
+  (is (= {:pages {"/foo" {:unique 3
+                          :total 20}
+                  "/bar" {:unique 1
+                          :total 2}
+                  "/foo/bar" {:unique 2
+                              :total 4}}
+          :unique 6
+          :total 26}
+         (usage/compute-usage-for-day {"/foo" {"10.0.0.1" 3
+                                               "10.2.2.3" 15
+                                               "10.2.2.4" 2}
+                                       "/bar" {"10.0.0.1" 2}
+                                       "/foo/bar" {"10.2.3.10" 1
+                                                   "10.0.0.1" 3}}))))

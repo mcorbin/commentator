@@ -3,14 +3,16 @@
             [com.stuartsierra.component :as component]
             [commentator.rate-limit :as rl]
             [commentator.store :as store]
-            [corbihttp.log :as log])
+            [corbihttp.log :as log]
+            [exoscale.ex :as ex])
   (:import java.util.concurrent.ScheduledThreadPoolExecutor
            java.util.concurrent.TimeUnit
            java.time.LocalDate
            java.time.format.DateTimeFormatter))
 
 (defprotocol IWebsiteUsage
-  (new-request [this request] "Add this request to the website usage component"))
+  (new-request [this request] "Add this request to the website usage component")
+  (usage-for-day [this website year month day] "Get the usage per article for the given day"))
 
 (def ^DateTimeFormatter formatter (DateTimeFormatter/ofPattern "yyyy/MM/dd"))
 
@@ -68,6 +70,30 @@
     (catch Exception e
       (log/error {} e "fail to purge cache"))))
 
+(defn get-usage
+  [website s3 day]
+  (let [path (resource-name day)]
+    (if (store/exists? s3 website path)
+      (-> (store/get-resource s3 website path)
+          (json/parse-string false))
+      (ex/ex-incorrect! (format "usage for day %s not found" day)
+                        {}))))
+
+(defn compute-usage-for-day
+  [usage]
+  (reduce
+   (fn [state [url accesses]]
+     (let [unique-page (count accesses)
+           total-page (reduce #(+ %1 (second %2)) 0 accesses)]
+       (-> (assoc-in state [:pages url]
+                     {:unique unique-page
+                      :total total-page})
+           (update :unique + unique-page)
+           (update :total + total-page))))
+   {:unique 0
+    :total 0}
+   usage))
+
 (defrecord WebsiteUsage [websites s3 cache executor]
   component/Lifecycle
   (start [this]
@@ -100,4 +126,7 @@
     (assoc this :cache nil :executor nil))
   IWebsiteUsage
   (new-request [_ request]
-    (swap! cache add-request request)))
+    (swap! cache add-request request))
+  (usage-for-day [_ website year month day]
+    (-> (get-usage website s3 (format "%s/%s/%s" year month day))
+        compute-usage-for-day)))

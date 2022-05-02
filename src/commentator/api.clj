@@ -36,6 +36,13 @@
 (s/def :challenge/random (s/keys :req-un [::article ::config/website]))
 
 (s/def :event/delete (s/keys :req-un [::event/id ::config/website]))
+(s/def :usage/day ::spec/non-empty-string)
+(s/def :usage/month ::spec/non-empty-string)
+(s/def :usage/year ::spec/non-empty-string)
+(s/def :usage/get-for-day (s/keys :req-un [::config/website
+                                           :usage/day
+                                           :usage/month
+                                           :usage/year]))
 (s/def :event/list (s/keys :req-un [::config/website]))
 
 (def router
@@ -68,4 +75,7 @@
    ["/api/admin/event/:website/:id" {:delete {:spec :event/delete
                                               :auth true
                                               :handler handler/delete-event}}]
+   ["/api/admin/usage/:website/:year/:month/:day" {:delete {:spec :usage/get-for-day>
+                                                            :auth true
+                                                            :handler handler/get-usage-for-day}}]
    ["/healthz" {:get {:handler handler/healthz}}]])

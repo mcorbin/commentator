@@ -21,6 +21,7 @@
   (random-challenge [this request] "get a random challenge")
   (list-events [this request] "List all events")
   (usage [this request] "Usage request")
+  (get-usage-for-day [this request] "get usage for a given day")
   (delete-event [this request] "Delete a specific event")
   (healthz [this request] "Healthz endpoint")
   (metrics [this request] "Metric endpoint")
@@ -139,6 +140,17 @@
       (ce/delete-event event-manager website event-id)
       {:status 200
        :body {:message "Event deleted"}}))
+
+  (get-usage-for-day [_ request]
+    (let [day (get-in request [:all-params :day])
+          month (get-in request [:all-params :month])
+          year (get-in request [:all-params :year])
+          website (req->website request)]
+      {:status 200 :body (usage/usage-for-day usage-component
+                                              website
+                                              year
+                                              month
+                                              day)}))
 
   ;; TODO
   (metrics [_ _]
