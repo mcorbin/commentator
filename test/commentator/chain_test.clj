@@ -2,12 +2,16 @@
   (:require [clojure.test :refer :all]
             [commentator.handler :as h]
             [commentator.chain :as chain]
+            [corbihttp.b64 :as b64]
             [exoscale.cloak :as cloak]
             [exoscale.interceptor :as interceptor]))
 
 (deftest auth-admin-test
-  (let [token "my-super-token"
-        chain (chain/interceptor-chain {:token (cloak/mask token)
+  (let [username "toto"
+        password "abc123"
+        auth-header (str "Basic " (b64/to-base64 (str username ":" password)))
+        chain (chain/interceptor-chain {:username username
+                                        :password (cloak/mask password)
                                         :allow-origin #{"foo.com"}
                                         :api-handler
                                         (reify h/IHandler
@@ -25,12 +29,10 @@
                                           (metrics [this request] {:status 200})
                                           (not-found [this request] {:status 404}))})
         handler (fn [request] (interceptor/execute {:request request} chain))
-        resp-403 {:status 403
-                  :body "{\"error\":\"Forbidden\"}",
-                  :headers
-                  {"content-type" "application/json"
-                   "Access-Control-Allow-Origin" "foo.com"
-                   "Vary" "Origin"}}]
+        resp-403 {:status 401
+                  :headers {"WWW-Authenticate" "Basic realm=\"commentator\""}
+                  :exoscale.interceptor/queue nil
+                  :exoscale.interceptor/stack nil}]
     (is (= resp-403
            (handler {:uri "/api/admin/comment/mcorbin/foo"
                      :request-method :get
@@ -38,15 +40,15 @@
     (is (= resp-403
            (handler {:uri "/api/admin/comment/mcorbin/foo/aaa"
                      :request-method :get
-                     :headers {"authorization" "invalid-token"}})))
+                     :headers {"authorization" "foo:bar"}})))
     (is (= resp-403
            (handler {:uri "/api/admin/comment/mcorbin/foo/aaa"
                      :request-method :post
-                     :headers {"authorization" "invalid-token"}})))
+                     :headers {"authorization" (str "Basic " (b64/to-base64 (str username ":AA")))}})))
     (is (= resp-403
            (handler {:uri "/api/admin/comment/mcorbin/foo"
                      :request-method :delete
-                     :headers {"authorization" "invalid-token"}})))
+                     :headers {"authorization" (str "Basic " (b64/to-base64 (str "abc:" password)))}})))
     (is (= resp-403
            (handler {:uri "/api/admin/comment/mcorbin/foo/aaa"
                      :request-method :delete

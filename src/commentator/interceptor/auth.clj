@@ -1,8 +1,11 @@
 (ns commentator.interceptor.auth
-  (:require [commentator.auth :as auth]))
+  (:require [corbihttp.interceptor.auth :as itc-auth]))
 
 (defn auth
-  [token]
+  [username password]
   {:name ::auth
    :enter (fn [ctx]
-            (auth/auth-handler ctx token))})
+            (let [admin? (-> ctx :handler :auth)]
+              (if admin?
+                (itc-auth/check username password "commentator" ctx)
+                ctx)))})

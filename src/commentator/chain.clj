@@ -13,7 +13,7 @@
             [corbihttp.interceptor.response :as itc-response]))
 
 (defn interceptor-chain
-  [{:keys [token api-handler registry allow-origin]}]
+  [{:keys [username password api-handler registry allow-origin]}]
   [itc-response/response ;;leave
    itc-json/json ;; leave
    (itc-error/last-error registry) ;;error
@@ -24,7 +24,7 @@
                      :registry registry
                      :handler-component api-handler
                      :not-found-handler handler/not-found}) ;; enter
-   (itc-auth/auth token)
+   (itc-auth/auth username password)
    itc-id/request-id ;;enter
    itc-ring/cookies ;; enter + leave
    itc-ring/params ;; enter

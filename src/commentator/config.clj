@@ -24,8 +24,9 @@
                               #(< (count %) 25)
                               #(re-matches #"^[a-zA-Z0-9-_]+$" %)))
 
-(s/def ::token ::cloak/secret)
-(s/def ::admin (s/keys :req-un [::token]))
+(s/def ::username ::cloak/secret)
+(s/def ::password ::cloak/secret)
+(s/def ::admin (s/keys :req-un [::username ::password]))
 
 (s/def ::access-key ::cloak/secret)
 (s/def ::secret-key ::cloak/secret)
