@@ -50,8 +50,6 @@
                                                 :handler handler/new-comment}
                                          :get {:spec :comment/for-article
                                                :handler handler/comments-for-article}}]
-   ["/api/v1/usage/:website" {:post {:spec :usage/add
-                                     :handler handler/usage}}]
    ["/api/admin/comment/:website/:article" {:get {:handler handler/admin-for-article
                                                   :auth true
                                                   :spec :comment/admin-for-article}
@@ -75,6 +73,8 @@
    ["/api/admin/event/:website/:id" {:delete {:spec :event/delete
                                               :auth true
                                               :handler handler/delete-event}}]
+   ["/api/v1/usage/:website" {:post {:spec :usage/add
+                                     :handler handler/usage}}]
    ["/api/admin/usage/:website/:year/:month/:day" {:delete {:spec :usage/get-for-day>
                                                             :auth true
                                                             :handler handler/get-usage-for-day}}]
