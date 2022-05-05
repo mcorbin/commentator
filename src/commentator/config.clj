@@ -24,7 +24,7 @@
                               #(< (count %) 25)
                               #(re-matches #"^[a-zA-Z0-9-_]+$" %)))
 
-(s/def ::username ::cloak/secret)
+(s/def ::username ::spec/non-empty-string)
 (s/def ::password ::cloak/secret)
 (s/def ::admin (s/keys :req-un [::username ::password]))
 
