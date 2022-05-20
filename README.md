@@ -19,3 +19,4 @@ Everytime a comment is added an event is generated into a dedicated file on S3. 
 ## Documentation
 
 The documentation is available at https://www.commentator.mcorbin.fr/
+
