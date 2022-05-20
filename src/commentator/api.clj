@@ -75,7 +75,7 @@
                                               :handler handler/delete-event}}]
    ["/api/v1/usage/:website" {:post {:spec :usage/add
                                      :handler handler/usage}}]
-   ["/api/admin/usage/:website/:year/:month/:day" {:delete {:spec :usage/get-for-day>
-                                                            :auth true
-                                                            :handler handler/get-usage-for-day}}]
+   ["/api/admin/usage/:website/:year/:month/:day" {:get {:spec :usage/get-for-day
+                                                         :auth true
+                                                         :handler handler/get-usage-for-day}}]
    ["/healthz" {:get {:handler handler/healthz}}]])
